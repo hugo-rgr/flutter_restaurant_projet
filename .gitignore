@@ -32,6 +32,7 @@ frontend/.flutter-plugins-dependencies
 frontend/.pub-cache/
 frontend/.pub/
 frontend/build/
+frontend/.env
 
 # Symbolication related
 app.*.symbols

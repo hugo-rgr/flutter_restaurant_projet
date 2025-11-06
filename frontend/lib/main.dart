@@ -1,10 +1,14 @@
-import 'package:flutter/material.dart';
+
+
+import 'package:flutter_restaurant_app/presentation/app.dart';
+
+import 'bootstrap.dart';
 
 void main() {
-  runApp(const RestaurantApp());
+  bootstrap(() => const App());
 }
 
-class RestaurantApp extends StatelessWidget {
+/*class RestaurantApp extends StatelessWidget {
   const RestaurantApp({super.key});
 
   @override
@@ -256,4 +260,4 @@ class _MenuPageState extends State<MenuPage> {
       ),
     );
   }
-}
+}*/
