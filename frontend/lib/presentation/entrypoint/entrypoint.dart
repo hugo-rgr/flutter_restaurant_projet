@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_restaurant_app/presentation/entrypoint/state/navbar.dart';
 import 'package:flutter_restaurant_app/presentation/menu/menu.dart';
+import 'package:flutter_restaurant_app/presentation/profile/profile.dart';
+import 'package:flutter_restaurant_app/presentation/reservation/reservation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:animations/animations.dart';
 import '../../domain/navbar_logic.dart';
@@ -22,6 +24,8 @@ class _EntryPointUIState extends ConsumerState<EntryPointUI> {
   Widget build(BuildContext context) {
     List<Widget> pages = [
       Menu(),
+      Reservation(),
+      Profile()
     ];
 
     //final cart = ref.watch(cartProvider);
@@ -32,13 +36,6 @@ class _EntryPointUIState extends ConsumerState<EntryPointUI> {
 
 
       Scaffold(
-        appBar: AppBar(
-         // backgroundColor: ref.colors.backgroundColor,
-          actions: [
-
-          ],
-          leadingWidth: 200,
-        ),
         body: PageTransitionSwitcher(
           transitionBuilder: (child, primaryAnimation, secondaryAnimation) {
             return SharedAxisTransition(

@@ -19,4 +19,22 @@ class Reservation extends BasePage<ReservationNotifier, ReservationState> {
   ) {
     return Container();
   }
+
+
+  @override
+  AppBar? buildAppBar(BuildContext context, WidgetRef ref, ReservationState? state) {
+    return AppBar(
+      backgroundColor: Colors.orange,
+      title: Text(
+        'RESERVATIONS',
+        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      ),
+      centerTitle: false,
+    );
+  }
+
+  /*@override
+  Color? buildBackgroundColor(WidgetRef ref, ReservationState? state) {
+    return Colors.white;
+  }*/
 }

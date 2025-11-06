@@ -18,7 +18,10 @@ class AuthService extends BaseService {
     required RegistrationDTO registrationDTO,
   }) async {
     try {
-      final response = await client.get(path: '/user/me');
+      final response = await client.get(
+        path: '/auth/register',
+        args: registrationDTO.toJson(),
+      );
       return AuthResponse(
         token: response.data['token'],
         user: response.data['user'],

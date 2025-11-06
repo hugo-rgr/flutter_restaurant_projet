@@ -16,12 +16,22 @@ final _privateConstructorUsedError = UnsupportedError(
 );
 
 /// @nodoc
-mixin _$MenuState {}
+mixin _$MenuState {
+  String get selectedCategory => throw _privateConstructorUsedError;
+
+  /// Create a copy of MenuState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $MenuStateCopyWith<MenuState> get copyWith =>
+      throw _privateConstructorUsedError;
+}
 
 /// @nodoc
 abstract class $MenuStateCopyWith<$Res> {
   factory $MenuStateCopyWith(MenuState value, $Res Function(MenuState) then) =
       _$MenuStateCopyWithImpl<$Res, MenuState>;
+  @useResult
+  $Res call({String selectedCategory});
 }
 
 /// @nodoc
@@ -36,14 +46,32 @@ class _$MenuStateCopyWithImpl<$Res, $Val extends MenuState>
 
   /// Create a copy of MenuState
   /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? selectedCategory = null}) {
+    return _then(
+      _value.copyWith(
+            selectedCategory:
+                null == selectedCategory
+                    ? _value.selectedCategory
+                    : selectedCategory // ignore: cast_nullable_to_non_nullable
+                        as String,
+          )
+          as $Val,
+    );
+  }
 }
 
 /// @nodoc
-abstract class _$$MenuStateImplCopyWith<$Res> {
+abstract class _$$MenuStateImplCopyWith<$Res>
+    implements $MenuStateCopyWith<$Res> {
   factory _$$MenuStateImplCopyWith(
     _$MenuStateImpl value,
     $Res Function(_$MenuStateImpl) then,
   ) = __$$MenuStateImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String selectedCategory});
 }
 
 /// @nodoc
@@ -57,28 +85,66 @@ class __$$MenuStateImplCopyWithImpl<$Res>
 
   /// Create a copy of MenuState
   /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? selectedCategory = null}) {
+    return _then(
+      _$MenuStateImpl(
+        selectedCategory:
+            null == selectedCategory
+                ? _value.selectedCategory
+                : selectedCategory // ignore: cast_nullable_to_non_nullable
+                    as String,
+      ),
+    );
+  }
 }
 
 /// @nodoc
 
 class _$MenuStateImpl implements _MenuState {
-  const _$MenuStateImpl();
+  const _$MenuStateImpl({this.selectedCategory = 'Entrée'});
+
+  @override
+  @JsonKey()
+  final String selectedCategory;
 
   @override
   String toString() {
-    return 'MenuState()';
+    return 'MenuState(selectedCategory: $selectedCategory)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$MenuStateImpl);
+        (other.runtimeType == runtimeType &&
+            other is _$MenuStateImpl &&
+            (identical(other.selectedCategory, selectedCategory) ||
+                other.selectedCategory == selectedCategory));
   }
 
   @override
-  int get hashCode => runtimeType.hashCode;
+  int get hashCode => Object.hash(runtimeType, selectedCategory);
+
+  /// Create a copy of MenuState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$MenuStateImplCopyWith<_$MenuStateImpl> get copyWith =>
+      __$$MenuStateImplCopyWithImpl<_$MenuStateImpl>(this, _$identity);
 }
 
 abstract class _MenuState implements MenuState {
-  const factory _MenuState() = _$MenuStateImpl;
+  const factory _MenuState({final String selectedCategory}) = _$MenuStateImpl;
+
+  @override
+  String get selectedCategory;
+
+  /// Create a copy of MenuState
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$MenuStateImplCopyWith<_$MenuStateImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
