@@ -1,11 +1,14 @@
-import {NextFunction, Response} from "express";
-import {AuthRequest} from "./auth_middleware";
+import { NextFunction, Response } from 'express';
+import { AuthRequest } from './auth.middleware';
 
-    export const roleMiddleware = (roles: any) => {
-    return (req: AuthRequest, res: Response, next: NextFunction) => {
-        if (!req.user || !roles.includes(req.user?.role)) {
-            return res.status(403).json({ message: 'Accès non autorisé' });
-        }
-        next();
-    };
+export const roleMiddleware = (roles: string[]) => {
+  return (req: AuthRequest, res: Response, next: NextFunction) => {
+    if (!req.user || !roles.includes(req.user?.role)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied - insufficient permissions',
+      });
+    }
+    next();
+  };
 };
