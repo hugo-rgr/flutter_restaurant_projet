@@ -71,18 +71,16 @@ mixin BasePageMixin<TProvider extends ProviderBase<AsyncValue<TState>>, TState>
         .watch(provider)
         .when(
           data:
-              (state) => SafeArea(
-                child: Stack(
-                  children: [
-                    if (appBar != null) appBar,
-                    Padding(
-                      padding: EdgeInsets.only(
-                        top: appBar != null ? kToolbarHeight : 0,
-                      ),
-                      child: buildContent(context, ref, state),
+              (state) => Stack(
+                children: [
+                  if (appBar != null) appBar,
+                  Padding(
+                    padding: EdgeInsets.only(
+                      top: appBar != null ? kToolbarHeight*2 : 0,
                     ),
-                  ],
-                ),
+                    child: buildContent(context, ref, state),
+                  ),
+                ],
               ),
           error: buildError,
           loading: () => buildLoading(context),
@@ -97,7 +95,7 @@ mixin BasePageMixin<TProvider extends ProviderBase<AsyncValue<TState>>, TState>
               (state) => SizedBox(
                 height:
                     buildAppBar(context, ref, state) != null
-                        ? kToolbarHeight
+                        ? kToolbarHeight*2
                         : 0,
                 child: buildAppBar(context, ref, state),
               ),

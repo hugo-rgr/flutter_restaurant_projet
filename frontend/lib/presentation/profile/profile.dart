@@ -19,4 +19,21 @@ class Profile extends BasePage<ProfileNotifier, ProfileState> {
       ) {
     return Container();
   }
+
+  @override
+  AppBar? buildAppBar(BuildContext context, WidgetRef ref, ProfileState? state) {
+    return AppBar(
+      backgroundColor: Colors.orange,
+      title: Text(
+        'PROFILE',
+        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      ),
+      centerTitle: false,
+    );
+  }
+
+  @override
+  Color? buildBackgroundColor(WidgetRef ref, ProfileState? state) {
+    return Colors.white;
+  }
 }
