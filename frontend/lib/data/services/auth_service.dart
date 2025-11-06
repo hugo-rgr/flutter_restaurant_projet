@@ -18,7 +18,7 @@ class AuthService extends BaseService {
     required RegistrationDTO registrationDTO,
   }) async {
     try {
-      final response = await client.get(
+      final response = await client.post(
         path: '/auth/register',
         args: registrationDTO.toJson(),
       );
