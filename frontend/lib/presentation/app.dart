@@ -6,10 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../router/router_observer.dart';
 
 
-// identifier = 37fd36f8-7adc-4401-a9ba-1c2a080a04cf
-
-// key = 4976f5ba8ddc6b6d3d9618fa38d7b2c05ed36afebd4aca4e93b6f73954ba88f2
-
 final scaffoldMessengerProvider = Provider<GlobalKey<ScaffoldMessengerState>>(
       (ref) =>
       GlobalKey<ScaffoldMessengerState>(debugLabel: 'scaffoldMessengerKey'),
@@ -33,10 +29,6 @@ class _AppState extends ConsumerState<App> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
   }
 
   @override
@@ -57,8 +49,8 @@ class _AppState extends ConsumerState<App> with WidgetsBindingObserver {
         navigatorKey: routerKey,
         scaffoldMessengerKey: scaffoldMessengerKey,
         debugShowCheckedModeBanner: false,
-        initialRoute: Splash.route,
-        routes: {Splash.route: (_) => Splash()},
+        initialRoute: SplashPage.route,
+        routes: {SplashPage.route: (_) => SplashPage()},
         navigatorObservers: [routerObserver],
       ),
     );
