@@ -6,9 +6,8 @@ import 'base_state_notifier.dart';
 import 'errors/error_state.dart';
 import 'notiifer_lifecycle.dart';
 
-
 mixin BasePageMixin<TProvider extends ProviderBase<AsyncValue<TState>>, TState>
-on ConsumerWidget {
+    on ConsumerWidget {
   late final TProvider _provider;
 
   TProvider get provider => _provider;
@@ -21,8 +20,7 @@ on ConsumerWidget {
     return Scaffold(
       key: scaffoldKey,
       drawer: builtDrawer,
-      backgroundColor:
-      _buildBackgroundColor(ref) ,
+      backgroundColor: _buildBackgroundColor(ref),
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());
@@ -31,7 +29,6 @@ on ConsumerWidget {
       ),
       floatingActionButton: _buildFloatingActionButton(context, ref),
       bottomNavigationBar: _buildBottomNavigationBar(context, ref),
-
     );
   }
 
@@ -39,17 +36,17 @@ on ConsumerWidget {
     return ref
         .watch(provider)
         .when(
-      data: (state) => buildFloatingActionButton(context, ref, state),
-      error: (a, b) => buildFloatingActionButton(context, ref, null),
-      loading: () => buildFloatingActionButton(context, ref, null),
-    );
+          data: (state) => buildFloatingActionButton(context, ref, state),
+          error: (a, b) => buildFloatingActionButton(context, ref, null),
+          loading: () => buildFloatingActionButton(context, ref, null),
+        );
   }
 
   Widget? buildFloatingActionButton(
-      BuildContext context,
-      WidgetRef ref,
-      TState? state,
-      ) {
+    BuildContext context,
+    WidgetRef ref,
+    TState? state,
+  ) {
     return null;
   }
 
@@ -61,10 +58,11 @@ on ConsumerWidget {
     return ref
         .watch(provider)
         .when(
-      data: (state) => buildBackgroundColor( ref, state),
-      error: (a, b) => buildBackgroundColor( ref, null),
-      loading: () => buildBackgroundColor( ref, null),
-    );;
+          data: (state) => buildBackgroundColor(ref, state),
+          error: (a, b) => buildBackgroundColor(ref, null),
+          loading: () => buildBackgroundColor(ref, null),
+        );
+    ;
   }
 
   Widget buildBody(BuildContext context, WidgetRef ref) {
@@ -72,33 +70,40 @@ on ConsumerWidget {
     return ref
         .watch(provider)
         .when(
-      data:
-          (state) => Stack(
-        children: [
-          if (appBar != null) appBar,
-          SafeArea(
-            child: Padding(
-              padding: EdgeInsets.only(
-                top: appBar != null ? kToolbarHeight : 0,
+          data:
+              (state) => SafeArea(
+                child: Stack(
+                  children: [
+                    if (appBar != null) appBar,
+                    Padding(
+                      padding: EdgeInsets.only(
+                        top: appBar != null ? kToolbarHeight : 0,
+                      ),
+                      child: buildContent(context, ref, state),
+                    ),
+                  ],
+                ),
               ),
-              child: buildContent(context, ref, state),
-            ),
-          ),
-        ],
-      ),
-      error: buildError,
-      loading: () => buildLoading(context),
-    );
+          error: buildError,
+          loading: () => buildLoading(context),
+        );
   }
 
   Widget? _buildAppBar(BuildContext context, WidgetRef ref) {
     return ref
         .watch(provider)
         .when(
-      data: (state) => buildAppBar(context, ref, state),
-      error: (a, b) => buildAppBar(context, ref, null),
-      loading: () => buildAppBar(context, ref, null),
-    );
+          data:
+              (state) => SizedBox(
+                height:
+                    buildAppBar(context, ref, state) != null
+                        ? kToolbarHeight
+                        : 0,
+                child: buildAppBar(context, ref, state),
+              ),
+          error: (a, b) => buildAppBar(context, ref, null),
+          loading: () => buildAppBar(context, ref, null),
+        );
   }
 
   Widget? buildAppBar(BuildContext context, WidgetRef ref, TState? state) {
@@ -108,7 +113,7 @@ on ConsumerWidget {
   Widget buildContent(BuildContext context, WidgetRef ref, TState state);
 
   Widget buildError(Object e, StackTrace stackTrace) {
-   /* if (e is ErrorState) {
+    /* if (e is ErrorState) {
       e.when(
         stringError:
             (message, exception, stack) => Center(child: Text(message)),
@@ -129,13 +134,17 @@ on ConsumerWidget {
     return ref
         .watch(provider)
         .when(
-      data: (state) => buildDrawer(context, ref, state),
-      error: (a, b) => buildDrawer(context, ref, null),
-      loading: () => buildDrawer(context, ref, null),
-    );
+          data: (state) => buildDrawer(context, ref, state),
+          error: (a, b) => buildDrawer(context, ref, null),
+          loading: () => buildDrawer(context, ref, null),
+        );
   }
 
-  Widget? buildBottomNavigationBar(BuildContext context, WidgetRef ref, TState? state) {
+  Widget? buildBottomNavigationBar(
+    BuildContext context,
+    WidgetRef ref,
+    TState? state,
+  ) {
     return null;
   }
 
@@ -143,10 +152,10 @@ on ConsumerWidget {
     return ref
         .watch(provider)
         .when(
-      data: (state) => buildBottomNavigationBar(context, ref, state),
-      error: (a, b) => buildBottomNavigationBar(context, ref, null),
-      loading: () => buildBottomNavigationBar(context, ref, null),
-    );
+          data: (state) => buildBottomNavigationBar(context, ref, state),
+          error: (a, b) => buildBottomNavigationBar(context, ref, null),
+          loading: () => buildBottomNavigationBar(context, ref, null),
+        );
   }
 
   void openCloseDrawer() {
@@ -159,14 +168,14 @@ on ConsumerWidget {
 }
 
 abstract class BasePage<
-TStateNotifier extends BaseStateNotifier<TState>,
-TState extends BaseState
+  TStateNotifier extends BaseStateNotifier<TState>,
+  TState extends BaseState
 >
     extends ConsumerWidget
     with
         BasePageMixin<
-            AutoDisposeAsyncNotifierProvider<TStateNotifier, TState>,
-            TState
+          AutoDisposeAsyncNotifierProvider<TStateNotifier, TState>,
+          TState
         > {
   BasePage({
     required AutoDisposeAsyncNotifierProvider<TStateNotifier, TState> provider,
@@ -189,22 +198,22 @@ TState extends BaseState
 }
 
 abstract class BasePageWithArg<
-TStateNotifier extends BaseStateNotifierWithArg<TState, TArg>,
-TState extends BaseState,
-TArg
+  TStateNotifier extends BaseStateNotifierWithArg<TState, TArg>,
+  TState extends BaseState,
+  TArg
 >
     extends ConsumerWidget
     with
         BasePageMixin<
-            AutoDisposeFamilyAsyncNotifierProvider<TStateNotifier, TState, TArg>,
-            TState
+          AutoDisposeFamilyAsyncNotifierProvider<TStateNotifier, TState, TArg>,
+          TState
         > {
   BasePageWithArg({
     required this.arg,
     required AutoDisposeFamilyAsyncNotifierProvider<
-        TStateNotifier,
-        TState,
-        TArg
+      TStateNotifier,
+      TState,
+      TArg
     >
     provider,
     super.key,
