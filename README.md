@@ -80,7 +80,7 @@ Installation + migrations + seed:
 ```bash
 cd backend
 npm install
-npx prisma migrate deploy
+npx prisma migrate dev
 npm run seed  # optionnel si seed nécessaire
 npm run dev
 ```
@@ -89,7 +89,7 @@ L’API écoute sur http://localhost:3000
 ### 5.4 Migrations Prisma
 Pour créer une nouvelle migration:
 ```bash
-npx prisma migrate dev --name <nom_migration>
+npx prisma migrate dev
 ```
 
 ## 6. Configuration des variables d’environnement
