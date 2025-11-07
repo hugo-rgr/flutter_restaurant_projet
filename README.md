@@ -22,6 +22,7 @@ Backend (Node.js):
 - JSON Web Tokens (authentification)
 - Bcrypt (hash mot de passe)
 - Mailtrap (envoi d'emails de test)
+- Swagger
 
 ## 3. Fonctionnalités réalisées
 Frontend:
@@ -63,6 +64,9 @@ README.md              (ce fichier)
 ```bash
 cd frontend
 flutter pub get
+```
+Puis run :
+```bash
 flutter run
 ```
 
@@ -79,6 +83,9 @@ Installation + migrations + seed:
 cd backend
 npm install
 npx prisma migrate dev
+```
+Run:
+```bash
 npm run dev
 ```
 L’API écoute sur http://localhost:3000
@@ -88,6 +95,15 @@ Pour créer une nouvelle migration:
 ```bash
 npx prisma migrate dev
 ```
+
+### 5.5 Fichier de base de données
+La base de données est initialisée par le fichier `backend/prisma/seed.ts`
+Se référer à 5.3 et 5.4 pour la migration.
+
+Un fichier `backend/migrations.sql` peut aussi être utilisé pour initialiser la base de données à sa manière sans les commandes prisma.
+
+### 5.6 Swagger et test des endpoints API
+Une fois le backend démarré, aller sur `http://localhost:3000/api-docs`
 
 ## 6. Configuration des variables d’environnement
 Frontend: Android utilise `android/local.properties` pour la clé Google Maps: (implémentation incomplète, n'a pas été finalisé)
