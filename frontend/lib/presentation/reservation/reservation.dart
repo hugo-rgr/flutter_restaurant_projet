@@ -55,7 +55,7 @@ class ReservationPage extends BasePage<ReservationNotifier, ReservationState> {
             ],
           ),
         )
-        : ReservationManaging(state: state);
+        : ReservationManaging(state: state, notifier: notifier,);
   }
 
   Widget _buildNewReservationTab(
@@ -148,6 +148,7 @@ class ReservationPage extends BasePage<ReservationNotifier, ReservationState> {
             final reservation = state.reservations[index];
             return ReservationCard(
               key: ValueKey(reservation.id),
+              notifier: notifier,
               reservation: reservation,
             );
           },
@@ -257,27 +258,34 @@ class NewReservationForm extends ConsumerWidget {
 
         OreDropdown(
           items:
-              state!.tableSlots.map((slot) {
+              state.tableSlots.map((slot) {
                 final startTime = slot['startTime'];
                 final endTime = slot['endTime'];
                 final formattedTime = '${startTime} - ${endTime}';
                 return formattedTime;
               }).toList(),
-          onChanged: (String? value) {},
-          value:
-              '${state.actualSlot['startTime']} - ${state.actualSlot['endTime']}',
-          onTap: () {
+          onChanged: (String? value) {
+            print(value);
+
+            final start = value!.split(' - ')[0];
+            final end = value.split(' - ')[1];
             ref
                 .read(notifier)
                 .setActualSlot(
-                  state.tableSlots.where((slot) {
-                    final startTime = slot['startTime'];
-                    final endTime = slot['endTime'];
-                    final formattedTime = '${startTime} - ${endTime}';
-                    return formattedTime ==
-                        '${state.actualSlot['startTime']} - ${state.actualSlot['endTime']}';
-                  }).first,
-                );
+              state.tableSlots.where((slot) {
+                final startTime = slot['startTime'];
+                final endTime = slot['endTime'];
+                final formattedTime = '$startTime - $endTime';
+                return formattedTime ==
+                    '$start - $end';
+              }).first,
+            );
+
+          },
+          value:
+              '${state.actualSlot['startTime']} - ${state.actualSlot['endTime']}',
+          onTap: () {
+
           },
         ),
         SizedBox(height: 12),
@@ -323,22 +331,16 @@ class NewReservationForm extends ConsumerWidget {
                          ref.read(notifier).openLogin();
                          return;
     }
-                       if(user.name == null || user.phone == null) {
+                       if(user.name == ''  || user.phone == '') {
                          openReservationForm(
                            context: context,
                            ref: ref,
-                           onTap: () async {
-                             await ref
-                                 .read(notifier)
-                                 .createReservation(tableId: table.id);
-
-                             Navigator.pop(context);
-                           },
-
+                          tableId: table.id,
+                            notifier: notifier,
                          );
                          return;
                        }
-                          ref.read(notifier).createReservation(tableId: table.id),
+                          ref.read(notifier).createReservation(tableId: table.id);
 
 
                       },
@@ -378,7 +380,8 @@ class NewReservationForm extends ConsumerWidget {
 void openReservationForm({
   required BuildContext context,
   required WidgetRef ref,
-  required VoidCallback onTap,
+  required Refreshable<ReservationNotifier> notifier,
+  required int tableId,
 }) async {
   await showModalBottomSheet(
     scrollControlDisabledMaxHeightRatio: 0.6,
@@ -398,7 +401,7 @@ void openReservationForm({
           right: 16,
           top: 16,
         ),
-        child: ReservationForm(onTap: onTap),
+        child: ReservationForm(ref: ref, notifier: notifier, tableId: tableId,),
       );
     },
   );

@@ -1,16 +1,21 @@
 import { Request, Response } from 'express';
 import reservationService from '../services/reservation.service';
 import { ReservationStatus } from '@prisma/client';
+import {sendReservationRequestDone} from "../config/emails";
 
 export class ReservationController {
   // Create a new reservation
   async createReservation(req: Request, res: Response): Promise<void> {
     try {
+        console.log('merdddddddde 111111');
       const { tableId, timeSlotId, numberOfGuests, startDate, endDate } = req.body;
       const userId = (req as any).user.userId;
+        const email = (req as any).user.email;
 
-      // Validation
+        console.log('merdddddddde 111111');
+        // Validation
       if (!tableId || !timeSlotId || !numberOfGuests || !startDate || !endDate) {
+          console.log('merdddddddde');
         res.status(400).json({
           error: 'tableId, timeSlotId, numberOfGuests, startDate, and endDate are required',
         });
@@ -25,6 +30,12 @@ export class ReservationController {
         startDate: new Date(startDate),
         endDate: new Date(endDate),
       });
+
+      const reservationDate: string = new Date(startDate).toDateString();
+
+      const reservationTime: string = (new Date(startDate).getHours() -1).toString().padStart(2, '0') + ':' + new Date(startDate).getMinutes().toString().padStart(2, '0');
+
+      await sendReservationRequestDone(email,reservationDate, reservationTime );
 
       res.status(201).json(reservation);
     } catch (error) {

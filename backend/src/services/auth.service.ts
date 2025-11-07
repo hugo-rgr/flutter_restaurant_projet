@@ -1,6 +1,7 @@
 import { PrismaClient, UserRole } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import {sendWelcomeEmail} from "../config/emails";
 
 const prisma = new PrismaClient();
 
@@ -62,6 +63,8 @@ export class AuthService {
       JWT_SECRET,
       { expiresIn: '7d' }
     );
+
+   await sendWelcomeEmail(user.email);
 
     return {
       token,
