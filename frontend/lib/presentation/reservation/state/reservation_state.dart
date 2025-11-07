@@ -10,10 +10,13 @@ class ReservationState with _$ReservationState, BaseState {
   const factory ReservationState({
     @Default([]) List<Reservation> reservations,
     @Default([]) List<RestaurantTable> availableTables,
+    @Default([]) List<Reservation> allReservations,
     @Default(false) bool checkingAvailability,
+    @Default(false) bool hasChecked,
     required TextEditingController seatsController,
     @Default(false) bool isAvailable,
     @Default(null) DateTime? selectedDate,
+    String? error,
     @Default(tableSlot) List<Map<String, dynamic>> tableSlots,
     @Default({
       'id': '1',

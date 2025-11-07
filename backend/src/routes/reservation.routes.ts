@@ -20,6 +20,8 @@ router.post('/', reservationController.createReservation);
 // GET /reservations - Get all reservations
 router.get('/', reservationController.getAllReservations);
 
+router.get('/all', roleMiddleware(['hote', 'admin']),reservationController.getAllReservationToManage);
+
 // GET /reservations/:id - Get a single reservation
 router.get('/:id', reservationController.getReservationById);
 

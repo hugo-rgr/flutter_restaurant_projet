@@ -23,10 +23,7 @@ class AuthService extends BaseService {
         path: '/auth/register',
         args: registrationDTO.toJson(),
       );
-      return AuthResponse(
-        token: response.data['token'],
-        user: response.data['user'],
-      );
+      return AuthResponse.fromJson(response.data);
     } catch (e) {
       rethrow;
     }

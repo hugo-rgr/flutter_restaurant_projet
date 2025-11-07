@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_restaurant_app/data/local/models/user.dart';
 import 'package:flutter_restaurant_app/domain/table_manager.dart';
 import 'package:flutter_restaurant_app/domain/user_logic.dart';
 import 'package:flutter_restaurant_app/presentation/reservation/state/reservation_state.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_restaurant_app/data/local/models/reservation_create_dto.
 import 'package:flutter_restaurant_app/data/local/models/reservation_update_dto.dart';
 import 'package:intl/intl.dart';
 import '../../../data/local/models/available_table_request_dto.dart';
+import '../../auth/auth.dart';
 import '../../common/base_state_notifier.dart';
 
 final reservationNotifierProvider =
@@ -28,6 +30,7 @@ class ReservationNotifier extends BaseStateNotifier<ReservationState> {
   @override
   FutureOr<void> refresh() async {
     await loadUserReservations();
+    await loadAdminAllManagingReservations();
   }
 
   void setActualSlot(Map<String, dynamic> actualSlot) {
@@ -55,12 +58,58 @@ class ReservationNotifier extends BaseStateNotifier<ReservationState> {
     }
   }
 
+  Future<void> loadAdminAllManagingReservations() async {
+    final user = ref.read(userProvider);
+
+    if (user == null) {
+      currentState = currentState.copyWith(allReservations: []);
+      return;
+    }
+    if (user.role != UserRole.hote && user.role != UserRole.admin) {
+      return;
+    }
+    try {
+      final reservations = await _manager.adminGetAll();
+      print('Loaded all reservations: $reservations');
+      currentState = currentState.copyWith(allReservations: reservations);
+    } catch (e) {
+      // En cas d'erreur, on affiche une liste vide plutôt que de bloquer
+      currentState = currentState.copyWith(allReservations: []);
+    }
+  }
+
+  Future<void> acceptOrRefuseReservation({
+    required int id,
+    required bool accept,
+  }) async {
+    try {
+      final status =
+          accept ? ReservationStatus.confirmed : ReservationStatus.rejected;
+      await _manager.changeStatus(id: id, status: status);
+      await loadAdminAllManagingReservations();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  void openLogin() {
+    router.pushReplacement(Auth(), Auth.route);
+  }
+
   List<int> getTime(String timeString) {
     List<String> parts = timeString.split(':');
     int hour = int.parse(parts[0]);
     int minute = int.parse(parts[1]);
 
     return [hour, minute];
+  }
+
+  bool isNumber(String str) {
+    if (str.isEmpty) {
+      return false;
+    }
+    final number = num.tryParse(str);
+    return number != null;
   }
 
   Future<void> createReservation({required int tableId}) async {
@@ -86,18 +135,19 @@ class ReservationNotifier extends BaseStateNotifier<ReservationState> {
           ),
         ),
       );
-      if(!router.routerContext.mounted){
+      if (!router.routerContext.mounted) {
         return;
       }
-      ScaffoldMessenger.of(router.routerContext).showSnackBar(
-        SnackBar(
-          content: Text('Réservation créée avec succès'),
-          backgroundColor: Colors.green,
-        ),
+      currentState = currentState.copyWith(
+        seatsController: TextEditingController(),
+        selectedDate: null,
+        availableTables: [],
+        hasChecked: false,
       );
       loadUserReservations();
+
     } catch (e) {
-      if(!router.routerContext.mounted){
+      if (!router.routerContext.mounted) {
         return;
       }
       ScaffoldMessenger.of(router.routerContext).showSnackBar(
@@ -112,6 +162,30 @@ class ReservationNotifier extends BaseStateNotifier<ReservationState> {
   }
 
   Future<void> checkAvailability() async {
+    currentState = currentState.copyWith(error: null);
+
+    if (currentState.seatsController.text.trim() == '') {
+      currentState = currentState.copyWith(
+        error: "Veuillez entrer le nombre de places",
+      );
+      return;
+    }
+
+    if (!isNumber(currentState.seatsController.text.trim())) {
+      currentState = currentState.copyWith(
+        error: "Veuillez entrer un nombre valide pour les places",
+      );
+      return;
+    }
+
+
+    if (currentState.selectedDate == null) {
+      currentState = currentState.copyWith(
+        error: "Veuillez sélectionner une date",
+      );
+      return;
+    }
+
     try {
       final availabilityQuery = AvailableTableRequestDto(
         date: DateFormat('yyyy-MM-dd').format(currentState.selectedDate!),
@@ -126,7 +200,7 @@ class ReservationNotifier extends BaseStateNotifier<ReservationState> {
 
       currentState = currentState.copyWith(
         availableTables: result,
-        // isAvailable: result.available,
+        hasChecked: true,
         checkingAvailability: false,
       );
     } catch (e) {

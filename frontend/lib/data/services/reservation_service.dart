@@ -27,6 +27,27 @@ class ReservationService extends BaseService {
     }
   }
 
+
+  Future<List<Reservation>> adminGetAll() async {
+    try {
+      final response = await client.get(
+        path: '/reservations/all',
+
+      );
+      print(response);
+      print('ici');
+      final list = response.data as List<dynamic>;
+
+      return list
+          .map((e) => Reservation.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+
+
   /// Liste des réservations (userId & status optionnels) – DTO filtre supprimé car pas d'autres filtres prévus.
   Future<List<Reservation>> getAll({
     int? userId,
@@ -168,6 +189,8 @@ class ReservationService extends BaseService {
         return 'confirmed';
       case ReservationStatus.cancelled:
         return 'cancelled';
+      case ReservationStatus.rejected:
+        return 'rejected';
     }
   }
 }

@@ -23,6 +23,7 @@ enum ReservationStatus {
   pending
   confirmed
   cancelled
+  rejected
 }
 
 model User {

@@ -114,10 +114,14 @@ export class ReservationService {
     return reservations;
   }
 
+
+
+  // Admin or hst getting all reservation
+
   // Get a single reservation by ID
-  async getReservationById(id: number) {
-    const reservation = await prisma.reservation.findUnique({
-      where: { id },
+  async getAllReservationToManage() {
+
+    return  prisma.reservation.findMany({
       include: {
         user: {
           select: {
@@ -130,14 +134,38 @@ export class ReservationService {
         },
         table: true,
       },
+      orderBy: {
+        startDate: 'asc',
+      },
+
     });
 
-    if (!reservation) {
-      throw new Error('Reservation not found');
     }
 
-    return reservation;
-  }
+    async getReservationById(id: number) {
+        const reservation = await prisma.reservation.findUnique({
+            where: { id },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        email: true,
+                        name: true,
+                        phone: true,
+                        role: true,
+                    },
+                },
+                table: true,
+            },
+        });
+
+        if (!reservation) {
+            throw new Error('Reservation not found');
+        }
+
+        return reservation;
+    }
+
 
   // Update a reservation
   async updateReservation(id: number, userId: number, data: UpdateReservationData) {

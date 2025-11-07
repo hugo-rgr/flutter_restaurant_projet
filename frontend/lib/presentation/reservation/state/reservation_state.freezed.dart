@@ -20,11 +20,14 @@ mixin _$ReservationState {
   List<Reservation> get reservations => throw _privateConstructorUsedError;
   List<RestaurantTable> get availableTables =>
       throw _privateConstructorUsedError;
+  List<Reservation> get allReservations => throw _privateConstructorUsedError;
   bool get checkingAvailability => throw _privateConstructorUsedError;
+  bool get hasChecked => throw _privateConstructorUsedError;
   TextEditingController get seatsController =>
       throw _privateConstructorUsedError;
   bool get isAvailable => throw _privateConstructorUsedError;
   DateTime? get selectedDate => throw _privateConstructorUsedError;
+  String? get error => throw _privateConstructorUsedError;
   List<Map<String, dynamic>> get tableSlots =>
       throw _privateConstructorUsedError;
   Map<String, dynamic> get actualSlot => throw _privateConstructorUsedError;
@@ -47,10 +50,13 @@ abstract class $ReservationStateCopyWith<$Res> {
   $Res call({
     List<Reservation> reservations,
     List<RestaurantTable> availableTables,
+    List<Reservation> allReservations,
     bool checkingAvailability,
+    bool hasChecked,
     TextEditingController seatsController,
     bool isAvailable,
     DateTime? selectedDate,
+    String? error,
     List<Map<String, dynamic>> tableSlots,
     Map<String, dynamic> actualSlot,
     Reservation? selectedReservation,
@@ -74,10 +80,13 @@ class _$ReservationStateCopyWithImpl<$Res, $Val extends ReservationState>
   $Res call({
     Object? reservations = null,
     Object? availableTables = null,
+    Object? allReservations = null,
     Object? checkingAvailability = null,
+    Object? hasChecked = null,
     Object? seatsController = null,
     Object? isAvailable = null,
     Object? selectedDate = freezed,
+    Object? error = freezed,
     Object? tableSlots = null,
     Object? actualSlot = null,
     Object? selectedReservation = freezed,
@@ -94,10 +103,20 @@ class _$ReservationStateCopyWithImpl<$Res, $Val extends ReservationState>
                     ? _value.availableTables
                     : availableTables // ignore: cast_nullable_to_non_nullable
                         as List<RestaurantTable>,
+            allReservations:
+                null == allReservations
+                    ? _value.allReservations
+                    : allReservations // ignore: cast_nullable_to_non_nullable
+                        as List<Reservation>,
             checkingAvailability:
                 null == checkingAvailability
                     ? _value.checkingAvailability
                     : checkingAvailability // ignore: cast_nullable_to_non_nullable
+                        as bool,
+            hasChecked:
+                null == hasChecked
+                    ? _value.hasChecked
+                    : hasChecked // ignore: cast_nullable_to_non_nullable
                         as bool,
             seatsController:
                 null == seatsController
@@ -114,6 +133,11 @@ class _$ReservationStateCopyWithImpl<$Res, $Val extends ReservationState>
                     ? _value.selectedDate
                     : selectedDate // ignore: cast_nullable_to_non_nullable
                         as DateTime?,
+            error:
+                freezed == error
+                    ? _value.error
+                    : error // ignore: cast_nullable_to_non_nullable
+                        as String?,
             tableSlots:
                 null == tableSlots
                     ? _value.tableSlots
@@ -147,10 +171,13 @@ abstract class _$$ReservationStateImplCopyWith<$Res>
   $Res call({
     List<Reservation> reservations,
     List<RestaurantTable> availableTables,
+    List<Reservation> allReservations,
     bool checkingAvailability,
+    bool hasChecked,
     TextEditingController seatsController,
     bool isAvailable,
     DateTime? selectedDate,
+    String? error,
     List<Map<String, dynamic>> tableSlots,
     Map<String, dynamic> actualSlot,
     Reservation? selectedReservation,
@@ -173,10 +200,13 @@ class __$$ReservationStateImplCopyWithImpl<$Res>
   $Res call({
     Object? reservations = null,
     Object? availableTables = null,
+    Object? allReservations = null,
     Object? checkingAvailability = null,
+    Object? hasChecked = null,
     Object? seatsController = null,
     Object? isAvailable = null,
     Object? selectedDate = freezed,
+    Object? error = freezed,
     Object? tableSlots = null,
     Object? actualSlot = null,
     Object? selectedReservation = freezed,
@@ -193,10 +223,20 @@ class __$$ReservationStateImplCopyWithImpl<$Res>
                 ? _value._availableTables
                 : availableTables // ignore: cast_nullable_to_non_nullable
                     as List<RestaurantTable>,
+        allReservations:
+            null == allReservations
+                ? _value._allReservations
+                : allReservations // ignore: cast_nullable_to_non_nullable
+                    as List<Reservation>,
         checkingAvailability:
             null == checkingAvailability
                 ? _value.checkingAvailability
                 : checkingAvailability // ignore: cast_nullable_to_non_nullable
+                    as bool,
+        hasChecked:
+            null == hasChecked
+                ? _value.hasChecked
+                : hasChecked // ignore: cast_nullable_to_non_nullable
                     as bool,
         seatsController:
             null == seatsController
@@ -213,6 +253,11 @@ class __$$ReservationStateImplCopyWithImpl<$Res>
                 ? _value.selectedDate
                 : selectedDate // ignore: cast_nullable_to_non_nullable
                     as DateTime?,
+        error:
+            freezed == error
+                ? _value.error
+                : error // ignore: cast_nullable_to_non_nullable
+                    as String?,
         tableSlots:
             null == tableSlots
                 ? _value._tableSlots
@@ -239,10 +284,13 @@ class _$ReservationStateImpl implements _ReservationState {
   const _$ReservationStateImpl({
     final List<Reservation> reservations = const [],
     final List<RestaurantTable> availableTables = const [],
+    final List<Reservation> allReservations = const [],
     this.checkingAvailability = false,
+    this.hasChecked = false,
     required this.seatsController,
     this.isAvailable = false,
     this.selectedDate = null,
+    this.error,
     final List<Map<String, dynamic>> tableSlots = tableSlot,
     final Map<String, dynamic> actualSlot = const {
       'id': '1',
@@ -252,6 +300,7 @@ class _$ReservationStateImpl implements _ReservationState {
     this.selectedReservation,
   }) : _reservations = reservations,
        _availableTables = availableTables,
+       _allReservations = allReservations,
        _tableSlots = tableSlots,
        _actualSlot = actualSlot;
 
@@ -273,9 +322,21 @@ class _$ReservationStateImpl implements _ReservationState {
     return EqualUnmodifiableListView(_availableTables);
   }
 
+  final List<Reservation> _allReservations;
+  @override
+  @JsonKey()
+  List<Reservation> get allReservations {
+    if (_allReservations is EqualUnmodifiableListView) return _allReservations;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_allReservations);
+  }
+
   @override
   @JsonKey()
   final bool checkingAvailability;
+  @override
+  @JsonKey()
+  final bool hasChecked;
   @override
   final TextEditingController seatsController;
   @override
@@ -284,6 +345,8 @@ class _$ReservationStateImpl implements _ReservationState {
   @override
   @JsonKey()
   final DateTime? selectedDate;
+  @override
+  final String? error;
   final List<Map<String, dynamic>> _tableSlots;
   @override
   @JsonKey()
@@ -307,7 +370,7 @@ class _$ReservationStateImpl implements _ReservationState {
 
   @override
   String toString() {
-    return 'ReservationState(reservations: $reservations, availableTables: $availableTables, checkingAvailability: $checkingAvailability, seatsController: $seatsController, isAvailable: $isAvailable, selectedDate: $selectedDate, tableSlots: $tableSlots, actualSlot: $actualSlot, selectedReservation: $selectedReservation)';
+    return 'ReservationState(reservations: $reservations, availableTables: $availableTables, allReservations: $allReservations, checkingAvailability: $checkingAvailability, hasChecked: $hasChecked, seatsController: $seatsController, isAvailable: $isAvailable, selectedDate: $selectedDate, error: $error, tableSlots: $tableSlots, actualSlot: $actualSlot, selectedReservation: $selectedReservation)';
   }
 
   @override
@@ -323,14 +386,21 @@ class _$ReservationStateImpl implements _ReservationState {
               other._availableTables,
               _availableTables,
             ) &&
+            const DeepCollectionEquality().equals(
+              other._allReservations,
+              _allReservations,
+            ) &&
             (identical(other.checkingAvailability, checkingAvailability) ||
                 other.checkingAvailability == checkingAvailability) &&
+            (identical(other.hasChecked, hasChecked) ||
+                other.hasChecked == hasChecked) &&
             (identical(other.seatsController, seatsController) ||
                 other.seatsController == seatsController) &&
             (identical(other.isAvailable, isAvailable) ||
                 other.isAvailable == isAvailable) &&
             (identical(other.selectedDate, selectedDate) ||
                 other.selectedDate == selectedDate) &&
+            (identical(other.error, error) || other.error == error) &&
             const DeepCollectionEquality().equals(
               other._tableSlots,
               _tableSlots,
@@ -348,10 +418,13 @@ class _$ReservationStateImpl implements _ReservationState {
     runtimeType,
     const DeepCollectionEquality().hash(_reservations),
     const DeepCollectionEquality().hash(_availableTables),
+    const DeepCollectionEquality().hash(_allReservations),
     checkingAvailability,
+    hasChecked,
     seatsController,
     isAvailable,
     selectedDate,
+    error,
     const DeepCollectionEquality().hash(_tableSlots),
     const DeepCollectionEquality().hash(_actualSlot),
     selectedReservation,
@@ -373,10 +446,13 @@ abstract class _ReservationState implements ReservationState {
   const factory _ReservationState({
     final List<Reservation> reservations,
     final List<RestaurantTable> availableTables,
+    final List<Reservation> allReservations,
     final bool checkingAvailability,
+    final bool hasChecked,
     required final TextEditingController seatsController,
     final bool isAvailable,
     final DateTime? selectedDate,
+    final String? error,
     final List<Map<String, dynamic>> tableSlots,
     final Map<String, dynamic> actualSlot,
     final Reservation? selectedReservation,
@@ -387,13 +463,19 @@ abstract class _ReservationState implements ReservationState {
   @override
   List<RestaurantTable> get availableTables;
   @override
+  List<Reservation> get allReservations;
+  @override
   bool get checkingAvailability;
+  @override
+  bool get hasChecked;
   @override
   TextEditingController get seatsController;
   @override
   bool get isAvailable;
   @override
   DateTime? get selectedDate;
+  @override
+  String? get error;
   @override
   List<Map<String, dynamic>> get tableSlots;
   @override

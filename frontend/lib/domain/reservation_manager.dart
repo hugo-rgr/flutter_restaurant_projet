@@ -29,4 +29,6 @@ class ReservationManager {
       _dao.availabilitySummary(query: query);
   Future<Reservation> changeStatusDTO({required int id, required ReservationStatusUpdateDTO dto}) =>
       _dao.updateStatusDTO(id: id, dto: dto);
+
+  Future<List<Reservation>> adminGetAll() => _dao.adminGetAll();
 }

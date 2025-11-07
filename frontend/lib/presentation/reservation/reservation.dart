@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_restaurant_app/data/local/models/user.dart';
 import 'package:flutter_restaurant_app/domain/user_logic.dart';
 import 'package:flutter_restaurant_app/presentation/reservation/state/reservation_notifier.dart';
 import 'package:flutter_restaurant_app/presentation/reservation/state/reservation_state.dart';
 import 'package:flutter_restaurant_app/presentation/common/widgets/ore_button.dart';
 import 'package:flutter_restaurant_app/presentation/common/widgets/ore_textfield.dart';
-import 'package:flutter_restaurant_app/data/local/models/reservation.dart'
-    as model;
+import 'package:flutter_restaurant_app/presentation/reservation/widgets/reservation_card.dart';
+import 'package:flutter_restaurant_app/presentation/reservation/widgets/reservation_form.dart';
+import 'package:flutter_restaurant_app/presentation/reservation/widgets/reservation_managing.dart';
+
 import 'package:flutter_restaurant_app/services/prefs/prefs_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -23,33 +26,36 @@ class ReservationPage extends BasePage<ReservationNotifier, ReservationState> {
     WidgetRef ref,
     ReservationState state,
   ) {
-    return DefaultTabController(
-      length: 2,
-      child: Column(
-        children: [
-          Container(
-            color: Colors.white,
-            child: TabBar(
-              labelColor: Colors.orange,
-              unselectedLabelColor: Colors.grey,
-              indicatorColor: Colors.orange,
-              tabs: [
-                Tab(text: 'Nouvelle Réservation'),
-                Tab(text: 'Mes Réservations'),
-              ],
-            ),
+    final user = ref.read(userProvider);
+    return !(user?.role == UserRole.admin || user?.role == UserRole.hote)
+        ? DefaultTabController(
+          length: 2,
+          child: Column(
+            children: [
+              Container(
+                color: Colors.white,
+                child: TabBar(
+                  labelColor: Colors.orange,
+                  unselectedLabelColor: Colors.grey,
+                  indicatorColor: Colors.orange,
+                  tabs: [
+                    Tab(text: 'Nouvelle Réservation'),
+                    Tab(text: 'Mes Réservations'),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    _buildNewReservationTab(context, ref, state, notifier),
+                    _buildMyReservationsTab(context, ref, state),
+                  ],
+                ),
+              ),
+            ],
           ),
-          Expanded(
-            child: TabBarView(
-              children: [
-                _buildNewReservationTab(context, ref, state, notifier),
-                _buildMyReservationsTab(context, ref, state),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+        )
+        : ReservationManaging(state: state);
   }
 
   Widget _buildNewReservationTab(
@@ -73,8 +79,6 @@ class ReservationPage extends BasePage<ReservationNotifier, ReservationState> {
     return FutureBuilder<int?>(
       future: ref.read(prefsProvider).getInt('userId'),
       builder: (context, snapshot) {
-        final isConnected = snapshot.data != null;
-
         if (user == null) {
           return Center(
             child: Padding(
@@ -98,7 +102,7 @@ class ReservationPage extends BasePage<ReservationNotifier, ReservationState> {
                   SizedBox(height: 32),
                   ElevatedButton.icon(
                     onPressed: () {
-                      DefaultTabController.of(context).animateTo(2);
+                      ref.read(notifier).openLogin();
                     },
                     icon: Icon(Icons.login),
                     label: Text('Se connecter'),
@@ -142,7 +146,7 @@ class ReservationPage extends BasePage<ReservationNotifier, ReservationState> {
           itemCount: state.reservations.length,
           itemBuilder: (context, index) {
             final reservation = state.reservations[index];
-            return _ReservationCard(
+            return ReservationCard(
               key: ValueKey(reservation.id),
               reservation: reservation,
             );
@@ -177,8 +181,6 @@ class ReservationPage extends BasePage<ReservationNotifier, ReservationState> {
 class NewReservationForm extends ConsumerWidget {
   NewReservationForm({super.key, required this.notifier});
   final Refreshable<ReservationNotifier> notifier;
-
-  final _guestsController = TextEditingController();
 
   Future<void> _selectDate(BuildContext context, WidgetRef ref) async {
     final DateTime? picked = await showDatePicker(
@@ -215,14 +217,17 @@ class NewReservationForm extends ConsumerWidget {
           'Informations de réservation',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 16),
+
         OreTextField(
           hintText: 'Nombre de personnes',
           controller: state!.seatsController,
           onChanged: (value) {},
           textInputType: TextInputType.number,
         ),
-        SizedBox(height: 16),
+        SizedBox(height: 8),
+
+        SizedBox(height: 8),
+
         InkWell(
           onTap: () => _selectDate(context, ref),
           child: Container(
@@ -235,14 +240,12 @@ class NewReservationForm extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  state?.selectedDate == null
+                  state.selectedDate == null
                       ? 'Sélectionner une date'
                       : DateFormat('dd/MM/yyyy').format(state!.selectedDate!),
                   style: TextStyle(
                     color:
-                        state?.selectedDate == null
-                            ? Colors.grey
-                            : Colors.black,
+                        state.selectedDate == null ? Colors.grey : Colors.black,
                   ),
                 ),
                 Icon(Icons.calendar_today, color: Colors.orange),
@@ -267,7 +270,7 @@ class NewReservationForm extends ConsumerWidget {
             ref
                 .read(notifier)
                 .setActualSlot(
-                  state!.tableSlots.where((slot) {
+                  state.tableSlots.where((slot) {
                     final startTime = slot['startTime'];
                     final endTime = slot['endTime'];
                     final formattedTime = '${startTime} - ${endTime}';
@@ -277,31 +280,11 @@ class NewReservationForm extends ConsumerWidget {
                 );
           },
         ),
-        /* InkWell(
-          onTap: () => _selectTime(context),
-          child: Container(
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(7),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  _selectedTime == null
-                      ? 'Sélectionner une heure'
-                      : _selectedTime!.format(context),
-                  style: TextStyle(
-                    color: _selectedTime == null ? Colors.grey : Colors.black,
-                  ),
-                ),
-                Icon(Icons.access_time, color: Colors.orange),
-              ],
-            ),
-          ),
-        ),*/
-        SizedBox(height: 24),
+        SizedBox(height: 12),
+        if (state.error != null)
+          Text(state.error!, style: TextStyle(color: Colors.red)),
+        SizedBox(height: 12),
+
         Center(
           child:
               state.checkingAvailability == true
@@ -313,14 +296,14 @@ class NewReservationForm extends ConsumerWidget {
                     }, //_checkAvailability,
                   ),
         ),
-        if (state?.availableTables.isNotEmpty ?? false) ...[
+        if (state.availableTables.isNotEmpty ?? false) ...[
           SizedBox(height: 24),
           Text(
             'Tables disponibles',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 16),
-          ...state!.availableTables.map((table) {
+          ...state.availableTables.map((table) {
             return Card(
               margin: EdgeInsets.only(bottom: 8),
               child: ListTile(
@@ -333,8 +316,31 @@ class NewReservationForm extends ConsumerWidget {
                     foregroundColor: Colors.white,
                   ),
                   onPressed:
-                      () => {
-                        ref.read(notifier).createReservation(tableId: table.id),
+                      ()  {
+                    final user = ref.read(userProvider);
+
+                       if(user == null) {
+                         ref.read(notifier).openLogin();
+                         return;
+    }
+                       if(user.name == null || user.phone == null) {
+                         openReservationForm(
+                           context: context,
+                           ref: ref,
+                           onTap: () async {
+                             await ref
+                                 .read(notifier)
+                                 .createReservation(tableId: table.id);
+
+                             Navigator.pop(context);
+                           },
+
+                         );
+                         return;
+                       }
+                          ref.read(notifier).createReservation(tableId: table.id),
+
+
                       },
                   child: Text('Réserver'),
                 ),
@@ -342,8 +348,7 @@ class NewReservationForm extends ConsumerWidget {
             );
           }),
         ],
-        if (state?.availableTables.isEmpty ??
-            false && state?.checkingAvailability == false) ...[
+        if (state.availableTables.isEmpty && state.hasChecked) ...[
           SizedBox(height: 24),
           Container(
             padding: EdgeInsets.all(16),
@@ -370,218 +375,31 @@ class NewReservationForm extends ConsumerWidget {
   }
 }
 
-class _ReservationCard extends ConsumerWidget {
-  final model.Reservation reservation;
-
-  const _ReservationCard({super.key, required this.reservation});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isPast = reservation.endDate.isBefore(DateTime.now());
-    final isCancelled = reservation.status == model.ReservationStatus.cancelled;
-
-    Color statusColor;
-    IconData statusIcon;
-
-    switch (reservation.status) {
-      case model.ReservationStatus.pending:
-        statusColor = Colors.orange;
-        statusIcon = Icons.hourglass_empty;
-        break;
-      case model.ReservationStatus.confirmed:
-        statusColor = Colors.green;
-        statusIcon = Icons.check_circle;
-        break;
-      case model.ReservationStatus.cancelled:
-        statusColor = Colors.red;
-        statusIcon = Icons.cancel;
-        break;
-    }
-
-    return Card(
-      margin: EdgeInsets.only(bottom: 16),
-      color: Colors.white,
-      elevation: 1,
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(statusIcon, color: statusColor, size: 20),
-                    SizedBox(width: 8),
-                    Text(
-                      reservation.statusLabel,
-                      style: TextStyle(
-                        color: statusColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                if (reservation.table != null)
-                  Chip(
-                    label: Text('Table ${reservation.table!.number}'),
-                    backgroundColor: Colors.orange.shade50,
-                  ),
-              ],
-            ),
-            Divider(),
-            Row(
-              children: [
-                Icon(Icons.calendar_today, size: 16, color: Colors.grey),
-                SizedBox(width: 8),
-                Text(
-                  DateFormat('dd/MM/yyyy').format(reservation.startDate),
-                  style: TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(Icons.access_time, size: 16, color: Colors.grey),
-                SizedBox(width: 8),
-                Text(
-                  '${DateFormat('HH:mm').format(reservation.startDate)} - ${DateFormat('HH:mm').format(reservation.endDate)}',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(Icons.people, size: 16, color: Colors.grey),
-                SizedBox(width: 8),
-                Text(
-                  '${reservation.numberOfGuests} personne(s)',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-            if (!isPast && !isCancelled) ...[
-              SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton.icon(
-                    onPressed: () => _deleteReservation(context, ref),
-                    icon: Icon(Icons.edit, color: Colors.grey),
-                    label: Text(
-                      'Modifier',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                  TextButton.icon(
-                    onPressed: () => _deleteReservation(context, ref),
-                    icon: Icon(Icons.delete, color: Colors.red),
-                    label: Text(
-                      'Supprimer',
-                      style: TextStyle(color: Colors.red),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ],
-        ),
+void openReservationForm({
+  required BuildContext context,
+  required WidgetRef ref,
+  required VoidCallback onTap,
+}) async {
+  await showModalBottomSheet(
+    scrollControlDisabledMaxHeightRatio: 0.6,
+    context: context,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(5),
+        topRight: Radius.circular(5),
       ),
-    );
-  }
-
-  Future<void> _showCancelDialog(BuildContext context, WidgetRef ref) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text('Annuler la réservation'),
-            content: Text('Voulez-vous vraiment annuler cette réservation ?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text('Non'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text('Oui', style: TextStyle(color: Colors.red)),
-              ),
-            ],
-          ),
-    );
-
-    if (confirmed == true) {
-      try {
-        await ref
-            .read(reservationNotifierProvider.notifier)
-            .cancelReservation(reservation.id);
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Réservation annulée'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
-      } catch (e) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Erreur: ${e.toString()}'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      }
-    }
-  }
-
-  Future<void> _deleteReservation(BuildContext context, WidgetRef ref) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text('Supprimer la réservation'),
-            content: Text('Voulez-vous vraiment supprimer cette réservation ?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text('Non'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text('Oui', style: TextStyle(color: Colors.red)),
-              ),
-            ],
-          ),
-    );
-
-    if (confirmed == true) {
-      try {
-        await ref
-            .read(reservationNotifierProvider.notifier)
-            .deleteReservation(reservation.id);
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Réservation supprimée'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
-      } catch (e) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Erreur: ${e.toString()}'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      }
-    }
-  }
+    ),
+    builder: (_) {
+      return Container(
+        height: MediaQuery.sizeOf(context).height * 0.6,
+        padding: const EdgeInsets.only(
+          bottom: 16.0,
+          left: 16,
+          right: 16,
+          top: 16,
+        ),
+        child: ReservationForm(onTap: onTap),
+      );
+    },
+  );
 }

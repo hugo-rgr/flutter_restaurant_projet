@@ -47,6 +47,8 @@ class ReservationUpdateDTO {
         return 'confirmed';
       case ReservationStatus.cancelled:
         return 'cancelled';
+      case ReservationStatus.rejected:
+        return 'rejected';
     }
   }
 }

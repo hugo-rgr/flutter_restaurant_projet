@@ -67,6 +67,13 @@ export class ReservationController {
     }
   }
 
+
+  async getAllReservationToManage(req: Request, res: Response): Promise<void> {
+      const reservations = await reservationService.getAllReservationToManage();
+      res.status(200).json( reservations);
+  }
+
+
   // Get a single reservation
   async getReservationById(req: Request, res: Response): Promise<void> {
     try {
