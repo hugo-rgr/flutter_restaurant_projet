@@ -24,7 +24,7 @@ class _EntryPointUIState extends ConsumerState<EntryPointUI> {
   Widget build(BuildContext context) {
     List<Widget> pages = [
       Menu(),
-      Reservation(),
+      ReservationPage(),
       Profile()
     ];
 

@@ -12,6 +12,23 @@ export interface UpdateTableData {
   seats?: number;
 }
 
+type tableSlot = {
+    id        :number
+    startTime :string
+    endTime   :string
+    available :boolean
+}
+
+
+const initialTimeSlots: tableSlot[] = [
+    { id: 1, startTime: '08:00', endTime: '9:00', available: true },
+    { id: 2,  startTime: '10:00', endTime: '11:00', available: true },
+    { id: 3,  startTime: '12:00', endTime: '13:00', available: true },
+    { id: 4,  startTime: '14:00', endTime: '15:00', available: true },
+    { id: 5, startTime: '18:00', endTime: '19:00', available: true },
+    { id: 6, startTime: '19:00', endTime: '20:00', available: true },
+];
+
 export class TableService {
   // Create a new table
   async createTable(data: CreateTableData) {
@@ -28,7 +45,9 @@ export class TableService {
       data: {
         number: data.number,
         seats: data.seats,
+          timeSlot: initialTimeSlots
       },
+
     });
 
     return table;
@@ -51,6 +70,48 @@ export class TableService {
 
     return tables;
   }
+
+  // get available table
+
+    async getAvailableTables(seats: number, date: Date, timeSlotId: string) {
+        // Normaliser la date de recherche (minuit du jour donné)
+        const searchDate = new Date(date);
+        searchDate.setHours(0, 0, 0, 0);
+
+        const nextDay = new Date(searchDate);
+        nextDay.setDate(nextDay.getDate() + 1);
+
+        // Find tables that can accommodate the number of guests
+        const tables = await prisma.table.findMany({
+            where: {
+                seats: {
+                    gte: seats,
+                },
+            },
+        });
+
+        // Filter out tables that are already reserved for the given date and time slot
+        const availableTables = [];
+        for (const table of tables) {
+            const existingReservation = await prisma.reservation.findFirst({
+                where: {
+                    tableId: table.id,
+                    timeSlotId: timeSlotId,
+                    status: { not: 'cancelled' },
+                    startDate: {
+                        gte: searchDate,  // À partir de minuit du jour recherché
+                        lt: nextDay,       // Avant minuit du jour suivant
+                    },
+                },
+            });
+
+            if (!existingReservation) {
+                availableTables.push(table);
+            }
+        }
+
+        return availableTables;
+    }
 
   // Get a single table by ID
   async getTableById(id: number) {

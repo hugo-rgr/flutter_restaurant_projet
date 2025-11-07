@@ -28,7 +28,10 @@ class ReservationService extends BaseService {
   }
 
   /// Liste des réservations (userId & status optionnels) – DTO filtre supprimé car pas d'autres filtres prévus.
-  Future<List<Reservation>> getAll({int? userId, ReservationStatus? status}) async {
+  Future<List<Reservation>> getAll({
+    int? userId,
+    ReservationStatus? status,
+  }) async {
     try {
       final response = await client.get(
         path: '/reservations',
@@ -37,8 +40,13 @@ class ReservationService extends BaseService {
           if (status != null) 'status': _statusToString(status),
         },
       );
+      print(response);
+      print('ici');
       final list = response.data as List<dynamic>;
-      return list.map((e) => Reservation.fromJson(e as Map<String, dynamic>)).toList();
+
+      return list
+          .map((e) => Reservation.fromJson(e as Map<String, dynamic>))
+          .toList();
     } catch (e) {
       rethrow;
     }
@@ -55,7 +63,10 @@ class ReservationService extends BaseService {
   }
 
   /// Met à jour une réservation (propriétaire seulement)
-  Future<Reservation> update({required int id, required ReservationUpdateDTO dto}) async {
+  Future<Reservation> update({
+    required int id,
+    required ReservationUpdateDTO dto,
+  }) async {
     try {
       final response = await client.put(
         path: '/reservations/$id',
@@ -68,7 +79,10 @@ class ReservationService extends BaseService {
   }
 
   /// Met à jour uniquement le statut (hôte / admin)
-  Future<Reservation> updateStatus({required int id, required ReservationStatus status}) async {
+  Future<Reservation> updateStatus({
+    required int id,
+    required ReservationStatus status,
+  }) async {
     try {
       final response = await client.patch(
         path: '/reservations/$id/status',
@@ -91,16 +105,19 @@ class ReservationService extends BaseService {
   }
 
   /// Vérifie la disponibilité des tables sur un créneau
-  Future<ReservationAvailabilityResult> checkAvailability({required ReservationAvailabilityQuery query}) async {
+  Future<ReservationAvailabilityResult> checkAvailability({
+    required ReservationAvailabilityQuery query,
+  }) async {
     try {
       final response = await client.get(
         path: '/reservations/availability',
         args: query.toQuery(),
       );
       final data = response.data as Map<String, dynamic>;
-      final tables = (data['tables'] as List<dynamic>)
-          .map((e) => RestaurantTable.fromJson(e as Map<String, dynamic>))
-          .toList();
+      final tables =
+          (data['tables'] as List<dynamic>)
+              .map((e) => RestaurantTable.fromJson(e as Map<String, dynamic>))
+              .toList();
       return ReservationAvailabilityResult(
         available: data['available'] as bool,
         tables: tables,
@@ -111,20 +128,27 @@ class ReservationService extends BaseService {
   }
 
   /// Résumé global de disponibilité sur une plage de dates
-  Future<AvailabilitySummary> availabilitySummary({required AvailabilitySummaryQuery query}) async {
+  Future<AvailabilitySummary> availabilitySummary({
+    required AvailabilitySummaryQuery query,
+  }) async {
     try {
       final response = await client.get(
         path: '/reservations/availability-summary',
         args: query.toQuery(),
       );
-      return AvailabilitySummary.fromJson(response.data as Map<String, dynamic>);
+      return AvailabilitySummary.fromJson(
+        response.data as Map<String, dynamic>,
+      );
     } catch (e) {
       rethrow;
     }
   }
 
   /// Met à jour le statut avec un DTO status (facultatif, peut être simplifié en passant directement l'enum)
-  Future<Reservation> updateStatusDTO({required int id, required ReservationStatusUpdateDTO dto}) async {
+  Future<Reservation> updateStatusDTO({
+    required int id,
+    required ReservationStatusUpdateDTO dto,
+  }) async {
     try {
       final response = await client.patch(
         path: '/reservations/$id/status',
@@ -151,7 +175,10 @@ class ReservationService extends BaseService {
 class ReservationAvailabilityResult {
   final bool available;
   final List<RestaurantTable> tables;
-  ReservationAvailabilityResult({required this.available, required this.tables});
+  ReservationAvailabilityResult({
+    required this.available,
+    required this.tables,
+  });
 }
 
 class AvailabilitySummary {
@@ -171,7 +198,8 @@ class AvailabilitySummary {
     required this.availableTables,
   });
 
-  factory AvailabilitySummary.fromJson(Map<String, dynamic> json) => AvailabilitySummary(
+  factory AvailabilitySummary.fromJson(Map<String, dynamic> json) =>
+      AvailabilitySummary(
         totalTables: json['totalTables'] as int,
         totalSeats: json['totalSeats'] as int,
         reservedSeats: json['reservedSeats'] as int,

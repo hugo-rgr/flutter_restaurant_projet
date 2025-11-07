@@ -5,6 +5,7 @@ const prisma = new PrismaClient();
 export interface CreateReservationData {
   userId: number;
   tableId: number;
+  timeSlotId: string;
   numberOfGuests: number;
   startDate: Date;
   endDate: Date;
@@ -57,6 +58,7 @@ export class ReservationService {
       data: {
         userId: data.userId,
         tableId: data.tableId,
+        timeSlotId: data.timeSlotId,
         numberOfGuests: data.numberOfGuests,
         startDate: data.startDate,
         endDate: data.endDate,

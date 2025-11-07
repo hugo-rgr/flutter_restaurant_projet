@@ -6,13 +6,13 @@ export class ReservationController {
   // Create a new reservation
   async createReservation(req: Request, res: Response): Promise<void> {
     try {
-      const { tableId, numberOfGuests, startDate, endDate } = req.body;
+      const { tableId, timeSlotId, numberOfGuests, startDate, endDate } = req.body;
       const userId = (req as any).user.userId;
 
       // Validation
-      if (!tableId || !numberOfGuests || !startDate || !endDate) {
+      if (!tableId || !timeSlotId || !numberOfGuests || !startDate || !endDate) {
         res.status(400).json({
-          error: 'tableId, numberOfGuests, startDate, and endDate are required',
+          error: 'tableId, timeSlotId, numberOfGuests, startDate, and endDate are required',
         });
         return;
       }
@@ -20,6 +20,7 @@ export class ReservationController {
       const reservation = await reservationService.createReservation({
         userId,
         tableId: parseInt(tableId),
+        timeSlotId: timeSlotId,
         numberOfGuests: parseInt(numberOfGuests),
         startDate: new Date(startDate),
         endDate: new Date(endDate),
@@ -56,7 +57,7 @@ export class ReservationController {
         statusFilter
       );
 
-      res.status(200).json(reservations);
+      res.status(200).json( reservations);
     } catch (error) {
       if (error instanceof Error) {
         res.status(500).json({ error: error.message });

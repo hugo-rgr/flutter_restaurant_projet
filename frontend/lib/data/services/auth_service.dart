@@ -40,10 +40,11 @@ class AuthService extends BaseService {
         path: '/auth/login',
         args: loginDTO.toJson(),
       );
-      return AuthResponse(
-        token: response.data['token'],
-        user: response.data['user'],
-      );
+print('login response data: ${response.data}');
+      final authResponse =  AuthResponse.fromJson(response.data);
+
+      print('authResponse token: ${authResponse.token}');
+      return authResponse;
     } catch (e) {
       rethrow;
     }
