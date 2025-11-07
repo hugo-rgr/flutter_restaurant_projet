@@ -43,7 +43,6 @@ Backend:
 
 ## 4. Arborescence (vue simplifiée)
 ```
-android/               (projet Android global et module Flutter)
 backend/               (API Node.js + Prisma)
 frontend/              (code Flutter)
   lib/
@@ -81,7 +80,6 @@ Installation + migrations + seed:
 cd backend
 npm install
 npx prisma migrate dev
-npm run seed  # optionnel si seed nécessaire
 npm run dev
 ```
 L’API écoute sur http://localhost:3000
