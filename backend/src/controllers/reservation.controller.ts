@@ -35,7 +35,10 @@ export class ReservationController {
 
       const reservationTime: string = (new Date(startDate).getHours() -1).toString().padStart(2, '0') + ':' + new Date(startDate).getMinutes().toString().padStart(2, '0');
 
-      await sendReservationRequestDone(email,reservationDate, reservationTime );
+      try {
+          await sendReservationRequestDone(email,reservationDate, reservationTime );
+      } catch (error) {
+      }
 
       res.status(201).json(reservation);
     } catch (error) {

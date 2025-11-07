@@ -264,9 +264,19 @@ export class ReservationService {
       const reservationTime: string = (new Date(reservation.startDate).getHours() -1).toString().padStart(2, '0') + ':' + new Date(reservation.startDate).getMinutes().toString().padStart(2, '0');
 
       if(status===ReservationStatus.confirmed){
-          await sendReservationAcceptedEmail(user.email,reservationDate, reservationTime )
+          try {
+              await sendReservationAcceptedEmail(user.email,reservationDate, reservationTime )
+          }catch (error) {
+          }
+
+
       }else {
-            await sendReservationRejectedEmail(user.email,reservationDate, reservationTime )
+          try {
+              await sendReservationRejectedEmail(user.email,reservationDate, reservationTime )
+          }  catch (error) {
+
+          }
+
       }
 
 
