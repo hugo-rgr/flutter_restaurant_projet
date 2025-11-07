@@ -19,17 +19,18 @@ type tableSlot = {
     available :boolean
 }
 
-
+// Normalisation des heures (format HH:MM)
 const initialTimeSlots: tableSlot[] = [
-    { id: 1, startTime: '08:00', endTime: '9:00', available: true },
-    { id: 2,  startTime: '10:00', endTime: '11:00', available: true },
-    { id: 3,  startTime: '12:00', endTime: '13:00', available: true },
-    { id: 4,  startTime: '14:00', endTime: '15:00', available: true },
+    { id: 1, startTime: '08:00', endTime: '09:00', available: true },
+    { id: 2, startTime: '10:00', endTime: '11:00', available: true },
+    { id: 3, startTime: '12:00', endTime: '13:00', available: true },
+    { id: 4, startTime: '14:00', endTime: '15:00', available: true },
     { id: 5, startTime: '18:00', endTime: '19:00', available: true },
     { id: 6, startTime: '19:00', endTime: '20:00', available: true },
 ];
 
 export class TableService {
+  static getTimeSlots() { return initialTimeSlots; }
   // Create a new table
   async createTable(data: CreateTableData) {
     // Check if table number already exists
@@ -74,43 +75,52 @@ export class TableService {
   // get available table
 
     async getAvailableTables(seats: number, date: Date, timeSlotId: string) {
-        // Normaliser la date de recherche (minuit du jour donné)
-        const searchDate = new Date(date);
-        searchDate.setHours(0, 0, 0, 0);
-
-        const nextDay = new Date(searchDate);
-        nextDay.setDate(nextDay.getDate() + 1);
-
-        // Find tables that can accommodate the number of guests
-        const tables = await prisma.table.findMany({
-            where: {
-                seats: {
-                    gte: seats,
-                },
-            },
-        });
-
-        // Filter out tables that are already reserved for the given date and time slot
-        const availableTables = [];
-        for (const table of tables) {
-            const existingReservation = await prisma.reservation.findFirst({
-                where: {
-                    tableId: table.id,
-                    timeSlotId: timeSlotId,
-                    status: { not: 'cancelled' },
-                    startDate: {
-                        gte: searchDate,  // À partir de minuit du jour recherché
-                        lt: nextDay,       // Avant minuit du jour suivant
-                    },
-                },
-            });
-
-            if (!existingReservation) {
-                availableTables.push(table);
-            }
+        // Validation timeSlotId connu
+        const slot = initialTimeSlots.find(ts => String(ts.id) === String(timeSlotId));
+        if (!slot) {
+            throw new Error(`Unknown timeSlotId '${timeSlotId}'`);
         }
 
-        return availableTables;
+        // Construit les Date réelles du créneau (slotStart / slotEnd)
+        const day = new Date(date);
+        if (isNaN(day.getTime())) {
+            throw new Error('Invalid date');
+        }
+        // On force à minuit pour partir proprement
+        day.setHours(0,0,0,0);
+        const [slotStartHour, slotStartMin] = slot.startTime.split(':').map(n => parseInt(n,10));
+        const [slotEndHour, slotEndMin]     = slot.endTime.split(':').map(n => parseInt(n,10));
+        const slotStart = new Date(day);
+        slotStart.setHours(slotStartHour, slotStartMin, 0, 0);
+        const slotEnd = new Date(day);
+        slotEnd.setHours(slotEndHour, slotEndMin, 0, 0);
+
+        // Tables candidates (sièges suffisants)
+        const candidateTables = await prisma.table.findMany({
+            where: { seats: { gte: seats } },
+            orderBy: { number: 'asc' }
+        });
+        if (candidateTables.length === 0) return [];
+        const candidateIds = candidateTables.map(t => t.id);
+
+        // Conflits: réservations non annulées qui chevauchent l'intervalle
+        // Chevauchement: startDate < slotEnd AND endDate > slotStart
+        const conflictingReservations = await prisma.reservation.findMany({
+            where: {
+                tableId: { in: candidateIds },
+                status: { not: 'cancelled' },
+                // Filtrage rapide sur la journée pour limiter: startDate >= day - 1 jour ? On s'en tient au chevauchement direct.
+                AND: [
+                  { startDate: { lt: slotEnd } },
+                  { endDate: { gt: slotStart } },
+                ],
+                timeSlotId: String(timeSlotId) // garde la sémantique du créneau demandé
+            },
+            select: { tableId: true }
+        });
+
+        const blockedIds = new Set(conflictingReservations.map(r => r.tableId));
+        return candidateTables.filter(t => !blockedIds.has(t.id));
     }
 
   // Get a single table by ID

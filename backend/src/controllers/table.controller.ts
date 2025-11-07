@@ -1,9 +1,6 @@
 import { Request, Response } from 'express';
 import tableService from '../services/table.service';
 
-
-
-
 export class TableController {
   // Create a new table
   async createTable(req: Request, res: Response): Promise<void> {
@@ -73,19 +70,19 @@ export class TableController {
         const parsedDate = new Date(date as string);
         const parsedTimeSlotId = timeSlotId as string;
 
-        // Validation groupée
         if (isNaN(parsedSeats) || parsedSeats <= 0) {
             res.status(400).json({ error: 'Invalid seats value' });
             return;
         }
-
         if (isNaN(parsedDate.getTime())) {
             res.status(400).json({ error: 'Invalid date format' });
             return;
         }
 
-        if (!parsedTimeSlotId) {
-            res.status(400).json({ error: 'Invalid timeSlotId value' });
+        // Validation timeSlotId connu côté service (exposition statique)
+        const knownSlot = tableService.constructor['getTimeSlots']?.().some((s: any) => String(s.id) === String(parsedTimeSlotId));
+        if (!knownSlot) {
+            res.status(400).json({ error: `Unknown timeSlotId '${parsedTimeSlotId}'` });
             return;
         }
 
@@ -97,6 +94,10 @@ export class TableController {
             );
             res.status(200).json(availableTables);
         } catch (error) {
+            if (error instanceof Error && error.message.startsWith('Unknown timeSlotId')) {
+                res.status(400).json({ error: error.message });
+                return;
+            }
             res.status(500).json({ error: 'Failed to get available tables' });
         }
     }
