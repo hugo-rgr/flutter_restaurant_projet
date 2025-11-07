@@ -63,7 +63,6 @@ README.md              (ce fichier)
 ```bash
 cd frontend
 flutter pub get
-# Configurer la clé Google Maps: dans android/local.properties ajouter MAPS_API_KEY=VOTRE_CLE
 flutter run
 ```
 
@@ -91,7 +90,7 @@ npx prisma migrate dev
 ```
 
 ## 6. Configuration des variables d’environnement
-Frontend: Android utilise `local.properties` pour la clé Google Maps:
+Frontend: Android utilise `android/local.properties` pour la clé Google Maps: (implémentation incomplète, n'a pas été finalisé)
 ```
 MAPS_API_KEY=VOTRE_CLE_GOOGLE_MAPS
 ```
