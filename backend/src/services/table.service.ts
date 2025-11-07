@@ -75,54 +75,44 @@ export class TableService {
   // get available table
 
     async getAvailableTables(seats: number, date: Date, timeSlotId: string) {
-        // Validation timeSlotId connu
-        const slot = initialTimeSlots.find(ts => String(ts.id) === String(timeSlotId));
-        if (!slot) {
-            throw new Error(`Unknown timeSlotId '${timeSlotId}'`);
-        }
+        // Normaliser la date de recherche (minuit du jour donné)
+        const searchDate = new Date(date);
+        searchDate.setHours(0, 0, 0, 0);
 
-        // Construit les Date réelles du créneau (slotStart / slotEnd)
-        const day = new Date(date);
-        if (isNaN(day.getTime())) {
-            throw new Error('Invalid date');
-        }
-        // On force à minuit pour partir proprement
-        day.setHours(0,0,0,0);
-        const [slotStartHour, slotStartMin] = slot.startTime.split(':').map(n => parseInt(n,10));
-        const [slotEndHour, slotEndMin]     = slot.endTime.split(':').map(n => parseInt(n,10));
-        const slotStart = new Date(day);
-        slotStart.setHours(slotStartHour, slotStartMin, 0, 0);
-        const slotEnd = new Date(day);
-        slotEnd.setHours(slotEndHour, slotEndMin, 0, 0);
+        const nextDay = new Date(searchDate);
+        nextDay.setDate(nextDay.getDate() + 1);
 
-        // Tables candidates (sièges suffisants)
-        const candidateTables = await prisma.table.findMany({
-            where: { seats: { gte: seats } },
-            orderBy: { number: 'asc' }
-        });
-        if (candidateTables.length === 0) return [];
-        const candidateIds = candidateTables.map(t => t.id);
-
-        // Conflits: réservations non annulées qui chevauchent l'intervalle
-        // Chevauchement: startDate < slotEnd AND endDate > slotStart
-        const conflictingReservations = await prisma.reservation.findMany({
+        // Find tables that can accommodate the number of guests
+        const tables = await prisma.table.findMany({
             where: {
-                tableId: { in: candidateIds },
-                status: { not: 'cancelled' },
-                // Filtrage rapide sur la journée pour limiter: startDate >= day - 1 jour ? On s'en tient au chevauchement direct.
-                AND: [
-                  { startDate: { lt: slotEnd } },
-                  { endDate: { gt: slotStart } },
-                ],
-                timeSlotId: String(timeSlotId) // garde la sémantique du créneau demandé
+                seats: {
+                    gte: seats,
+                },
             },
-            select: { tableId: true }
         });
 
-        const blockedIds = new Set(conflictingReservations.map(r => r.tableId));
-        return candidateTables.filter(t => !blockedIds.has(t.id));
-    }
+        // Filter out tables that are already reserved for the given date and time slot
+        const availableTables = [];
+        for (const table of tables) {
+            const existingReservation = await prisma.reservation.findFirst({
+                where: {
+                    tableId: table.id,
+                    timeSlotId: timeSlotId,
+                    status: { not: 'cancelled' },
+                    startDate: {
+                        gte: searchDate,  // À partir de minuit du jour recherché
+                        lt: nextDay,       // Avant minuit du jour suivant
+                    },
+                },
+            });
 
+            if (!existingReservation) {
+                availableTables.push(table);
+            }
+        }
+
+        return availableTables;
+    }
   // Get a single table by ID
   async getTableById(id: number) {
     const table = await prisma.table.findUnique({

@@ -6,15 +6,19 @@ import 'package:flutter_restaurant_app/data/local/models/reservation.dart'
 import 'package:intl/intl.dart';
 
 import '../state/reservation_notifier.dart';
+import '../state/reservation_state.dart';
+import 'edit_reservation.dart';
 
 class ReservationCard extends ConsumerWidget {
   final model.Reservation reservation;
   final bool isAdmin;
   final Refreshable<ReservationNotifier> notifier;
+  final ReservationState state;
 
   const ReservationCard({
     super.key,
     required this.reservation,
+    required this.state,
     required this.notifier,
     this.isAdmin = false,
   });
@@ -116,30 +120,44 @@ class ReservationCard extends ConsumerWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  if (reservation.status == model.ReservationStatus.pending)
+                    TextButton.icon(
+                      onPressed: () async {
+                        if (isAdmin) {
+                          ref
+                              .read(notifier)
+                              .acceptOrRefuseReservation(
+                                id: reservation.id,
+                                accept: true,
+                              );
+                        } else {
+
+
+                          ref.read(notifier).addSlot(reservation, notifier);
+
+
+                        }
+                      },
+                      icon: Icon(
+                        isAdmin ? Icons.done : Icons.edit,
+                        color: Colors.grey,
+                      ),
+                      label: Text(
+                        isAdmin ? 'Confirmer' : 'Modifier',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
                   TextButton.icon(
                     onPressed: () {
                       if (isAdmin) {
-                        ref.read(notifier).acceptOrRefuseReservation(id: reservation.id, accept: true);
+                        ref
+                            .read(notifier)
+                            .acceptOrRefuseReservation(
+                              id: reservation.id,
+                              accept: false,
+                            );
                       } else {
-                        // Edit reservation logic here
-                      }
-                    },
-                    icon: Icon(
-                      isAdmin ? Icons.done : Icons.edit,
-                      color: Colors.grey,
-                    ),
-                    label: Text(
-                      isAdmin ? 'Confirmer' : 'Modifier',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                  TextButton.icon(
-                    onPressed: () {
-                      if(isAdmin){
-                        ref.read(notifier).acceptOrRefuseReservation(id: reservation.id, accept: false);
-                      }else {
                         _deleteReservation(context, ref);
-
                       }
                     },
                     icon: Icon(
@@ -252,5 +270,3 @@ class ReservationCard extends ConsumerWidget {
     }
   }
 }
-
-

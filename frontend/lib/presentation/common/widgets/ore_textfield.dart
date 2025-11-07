@@ -13,6 +13,7 @@ class OreTextField extends ConsumerWidget {
     this.withElevation =  false,
     this.maxLines = 1,
     this.textInputType,
+    this.initialValue,
   });
   final String hintText;
   final String? namingText;
@@ -22,6 +23,7 @@ class OreTextField extends ConsumerWidget {
   final TextInputType? textInputType;
   final TextEditingController controller;
   final void Function(String) onChanged;
+  final String? initialValue;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Center(
@@ -36,7 +38,6 @@ class OreTextField extends ConsumerWidget {
               borderRadius: BorderRadius.circular(7),
 
               child: TextFormField(
-
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter some text';

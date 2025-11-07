@@ -148,6 +148,7 @@ class ReservationPage extends BasePage<ReservationNotifier, ReservationState> {
             final reservation = state.reservations[index];
             return ReservationCard(
               key: ValueKey(reservation.id),
+              state: state,
               notifier: notifier,
               reservation: reservation,
             );
