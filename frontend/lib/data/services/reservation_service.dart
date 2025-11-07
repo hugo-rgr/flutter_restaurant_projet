@@ -6,7 +6,6 @@ import 'package:flutter_restaurant_app/data/local/models/reservation_update_dto.
 import 'package:flutter_restaurant_app/data/local/models/reservation_availability_query.dart';
 import 'package:flutter_restaurant_app/data/local/models/table.dart';
 import 'package:flutter_restaurant_app/data/local/models/reservation_status_update_dto.dart';
-import 'package:flutter_restaurant_app/data/local/models/reservation_filter_dto.dart';
 
 final reservationServiceProvider = Provider(ReservationService.new);
 
@@ -28,7 +27,7 @@ class ReservationService extends BaseService {
     }
   }
 
-  /// Liste des réservations (filtrage possible par userId et status)
+  /// Liste des réservations (userId & status optionnels) – DTO filtre supprimé car pas d'autres filtres prévus.
   Future<List<Reservation>> getAll({int? userId, ReservationStatus? status}) async {
     try {
       final response = await client.get(
@@ -124,21 +123,7 @@ class ReservationService extends BaseService {
     }
   }
 
-  /// Liste des réservations avec filtre
-  Future<List<Reservation>> getAllWithFilter({required ReservationFilterDTO filter}) async {
-    try {
-      final response = await client.get(
-        path: '/reservations',
-        args: filter.toQuery(),
-      );
-      final list = response.data as List<dynamic>;
-      return list.map((e) => Reservation.fromJson(e as Map<String, dynamic>)).toList();
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  /// Met à jour le statut avec un DTO
+  /// Met à jour le statut avec un DTO status (facultatif, peut être simplifié en passant directement l'enum)
   Future<Reservation> updateStatusDTO({required int id, required ReservationStatusUpdateDTO dto}) async {
     try {
       final response = await client.patch(
@@ -195,4 +180,3 @@ class AvailabilitySummary {
         availableTables: json['availableTables'] as int,
       );
 }
-

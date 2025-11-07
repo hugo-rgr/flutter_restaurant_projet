@@ -2,11 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/dao/reservation_dao.dart';
 import '../data/local/models/reservation.dart';
 import '../data/local/models/reservation_create_dto.dart';
-import '../data/local/models/reservation_filter_dto.dart';
-import '../data/local/models/reservation_status_update_dto.dart';
 import '../data/local/models/reservation_update_dto.dart';
 import '../data/local/models/reservation_availability_query.dart';
 import '../data/services/reservation_service.dart';
+import '../data/local/models/reservation_status_update_dto.dart';
 
 final reservationManagerProvider = Provider(ReservationManager.new);
 
@@ -28,8 +27,6 @@ class ReservationManager {
       _dao.checkAvailability(query: query);
   Future<AvailabilitySummary> availabilitySummary({required AvailabilitySummaryQuery query}) =>
       _dao.availabilitySummary(query: query);
-  Future<List<Reservation>> listWithFilter({required ReservationFilterDTO filter}) =>
-      _dao.getAllWithFilter(filter: filter);
   Future<Reservation> changeStatusDTO({required int id, required ReservationStatusUpdateDTO dto}) =>
       _dao.updateStatusDTO(id: id, dto: dto);
 }
