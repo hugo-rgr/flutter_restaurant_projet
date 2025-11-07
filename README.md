@@ -82,6 +82,7 @@ Installation + migrations + seed:
 ```bash
 cd backend
 npm install
+npm run seed #pour exécuter le seed
 npx prisma migrate dev
 ```
 Run:
@@ -98,7 +99,11 @@ npx prisma migrate dev
 
 ### 5.5 Fichier de base de données
 La base de données est initialisée par le fichier `backend/prisma/seed.ts`
-Se référer à 5.3 et 5.4 pour la migration.
+Pour l'activer, exécuter la commande suivante :
+```bash
+npm run seed
+```
+Se référer à 5.3 et 5.4 pour le reste de l'installation pour exécuter l'application par la suite.
 
 Un fichier `backend/migrations.sql` peut aussi être utilisé pour initialiser la base de données à sa manière sans les commandes prisma.
 
