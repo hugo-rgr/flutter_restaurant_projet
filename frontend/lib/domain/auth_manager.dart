@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_restaurant_app/data/local/models/registration_dto.dart';
+import 'package:flutter_restaurant_app/data/local/models/login_dto.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/dao/auth_dao.dart';
 
@@ -13,6 +14,13 @@ class AuthManager {
   Future<void> signup({required RegistrationDTO registerInfo}) async {
     try {
       await _authApi.register(registerInfo: registerInfo);
+    } catch (e) {
+      rethrow;
+    }
+  }
+  Future<void> signin({required LoginDTO loginInfo}) async {
+    try {
+      await _authApi.login(loginInfo: loginInfo);
     } catch (e) {
       rethrow;
     }

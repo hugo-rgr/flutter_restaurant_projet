@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../services/prefs/prefs_service.dart';
 import '../local/models/registration_dto.dart';
+import '../local/models/login_dto.dart';
 import '../local/models/user.dart';
 import 'base_service.dart';
 
@@ -21,6 +22,23 @@ class AuthService extends BaseService {
       final response = await client.post(
         path: '/auth/register',
         args: registrationDTO.toJson(),
+      );
+      return AuthResponse(
+        token: response.data['token'],
+        user: response.data['user'],
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<AuthResponse> login({
+    required LoginDTO loginDTO,
+  }) async {
+    try {
+      final response = await client.post(
+        path: '/auth/login',
+        args: loginDTO.toJson(),
       );
       return AuthResponse(
         token: response.data['token'],
