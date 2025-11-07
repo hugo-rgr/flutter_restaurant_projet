@@ -56,7 +56,7 @@ export class TableController {
   }
 
   // Get available tables for a given time slot
-    async getAvailableTables(req: Request, res: Response): Promise<void> {
+    /*async getAvailableTables(req: Request, res: Response): Promise<void> {
         const { seats, date, timeSlotId } = req.query;
 
         if (!seats || !date || !timeSlotId) {
@@ -98,6 +98,48 @@ export class TableController {
                 res.status(400).json({ error: error.message });
                 return;
             }
+            res.status(500).json({ error: 'Failed to get available tables' });
+        }
+    }*/
+
+    async getAvailableTables(req: Request, res: Response): Promise<void> {
+        const { seats, date, timeSlotId } = req.query;
+
+        if (!seats || !date || !timeSlotId) {
+            res.status(400).json({
+                error: 'seats, date, and timeSlotId are required',
+            });
+            return;
+        }
+
+        const parsedSeats = Number(seats);
+        const parsedDate = new Date(date as string);
+        const parsedTimeSlotId = timeSlotId as string;
+
+        // Validation groupée
+        if (isNaN(parsedSeats) || parsedSeats <= 0) {
+            res.status(400).json({ error: 'Invalid seats value' });
+            return;
+        }
+
+        if (isNaN(parsedDate.getTime())) {
+            res.status(400).json({ error: 'Invalid date format' });
+            return;
+        }
+
+        if (!parsedTimeSlotId) {
+            res.status(400).json({ error: 'Invalid timeSlotId value' });
+            return;
+        }
+
+        try {
+            const availableTables = await tableService.getAvailableTables(
+                parsedSeats,
+                parsedDate,
+                parsedTimeSlotId
+            );
+            res.status(200).json(availableTables);
+        } catch (error) {
             res.status(500).json({ error: 'Failed to get available tables' });
         }
     }

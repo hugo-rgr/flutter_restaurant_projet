@@ -53,6 +53,8 @@ class DioClient implements BaseRestClient {
         },
         onError: (DioException error, handler) async {
           print('❌ Error: ${error.type}');
+          print('📍 URL: ${error.requestOptions.baseUrl}${error.requestOptions.path}');
+          print('💬 Message: ${error.message}');
           return handler.next(error);
         },
 

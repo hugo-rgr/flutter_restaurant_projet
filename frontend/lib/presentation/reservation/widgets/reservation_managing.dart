@@ -18,6 +18,7 @@ class ReservationManaging extends StatelessWidget {
         final reservation = state.allReservations[index];
         return ReservationCard(
           key: ValueKey(reservation.id),
+          state: state,
           reservation: reservation,
           isAdmin: true, notifier: notifier,
         );

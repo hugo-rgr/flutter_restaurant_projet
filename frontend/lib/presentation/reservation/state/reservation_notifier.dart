@@ -4,6 +4,7 @@ import 'package:flutter_restaurant_app/data/local/models/user.dart';
 import 'package:flutter_restaurant_app/domain/table_manager.dart';
 import 'package:flutter_restaurant_app/domain/user_logic.dart';
 import 'package:flutter_restaurant_app/presentation/reservation/state/reservation_state.dart';
+import 'package:flutter_restaurant_app/presentation/reservation/widgets/edit_reservation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_restaurant_app/domain/reservation_manager.dart';
 import 'package:flutter_restaurant_app/services/prefs/prefs_service.dart';
@@ -34,7 +35,6 @@ class ReservationNotifier extends BaseStateNotifier<ReservationState> {
   }
 
   void setActualSlot(Map<String, dynamic> actualSlot) {
-
     print('Actual slot set to: $actualSlot');
     currentState = currentState.copyWith(actualSlot: actualSlot);
   }
@@ -60,6 +60,42 @@ class ReservationNotifier extends BaseStateNotifier<ReservationState> {
     }
   }
 
+  void setSeatsController(String string) {
+    currentState = currentState.copyWith(
+      seatsController: TextEditingController(text: string),
+    );
+  }
+
+
+  void addSlot(Reservation reservation, notifier)  {
+
+   setSeatsController(
+      reservation.numberOfGuests.toString(),
+    );
+
+
+
+
+    currentState = currentState.copyWith(
+      selectedDate: DateTime(
+        reservation.startDate.year,
+        reservation.startDate.month,
+        reservation.startDate.day,
+      ),
+    );
+
+
+
+    print(currentState.actualSlot);
+
+    print(currentState.tableSlots);
+
+    ref
+        .read(notifier)
+        .openEditReservation(reservation, notifier);
+
+  }
+
   Future<void> loadAdminAllManagingReservations() async {
     final user = ref.read(userProvider);
 
@@ -80,11 +116,20 @@ class ReservationNotifier extends BaseStateNotifier<ReservationState> {
     }
   }
 
+  void openEditReservation(
+    Reservation reservation,
+    Refreshable<ReservationNotifier> notifier,
+  ) {
+    router.push(
+      EditReservation(notifier: notifier, reservation: reservation),
+      EditReservation.route,
+    );
+  }
+
   Future<void> acceptOrRefuseReservation({
     required int id,
     required bool accept,
-  }) async
-  {
+  }) async {
     try {
       final status =
           accept ? ReservationStatus.confirmed : ReservationStatus.rejected;
@@ -115,7 +160,6 @@ class ReservationNotifier extends BaseStateNotifier<ReservationState> {
   }
 
   Future<void> createReservation({required int tableId}) async {
-
     final start = DateTime(
       currentState.selectedDate!.year,
       currentState.selectedDate!.month,
@@ -131,7 +175,6 @@ class ReservationNotifier extends BaseStateNotifier<ReservationState> {
       getTime(currentState.actualSlot['endTime'])[0],
       getTime(currentState.actualSlot['endTime'])[1],
     );
-
 
     print('Creating reservation with:  $end');
     print('Creating reservation with:  $start');
@@ -155,7 +198,6 @@ class ReservationNotifier extends BaseStateNotifier<ReservationState> {
         hasChecked: false,
       );
       loadUserReservations();
-
     } catch (e) {
       if (!router.routerContext.mounted) {
         return;
@@ -164,6 +206,71 @@ class ReservationNotifier extends BaseStateNotifier<ReservationState> {
         SnackBar(
           content: Text(
             'Une erreur est survenue lors de la création de la réservation',
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> updateReservation({required int tableId, required int reservationId}) async {
+    final start = DateTime(
+      currentState.selectedDate!.year,
+      currentState.selectedDate!.month,
+      currentState.selectedDate!.day,
+      getTime(currentState.actualSlot['startTime'])[0],
+      getTime(currentState.actualSlot['startTime'])[1],
+    );
+
+    final end = DateTime(
+      currentState.selectedDate!.year,
+      currentState.selectedDate!.month,
+      currentState.selectedDate!.day,
+      getTime(currentState.actualSlot['endTime'])[0],
+      getTime(currentState.actualSlot['endTime'])[1],
+    );
+
+    print('Creating reservation with:  $end');
+    print('Creating reservation with:  $start');
+
+    print( ReservationUpdateDTO(
+      tableId: tableId,
+      numberOfGuests: int.parse(currentState.seatsController.text),
+      startDate: start,
+      endDate: end,
+    ).toJson());
+    try {
+      await _manager.edit(
+        dto: ReservationUpdateDTO(
+          tableId: tableId,
+          numberOfGuests: int.parse(currentState.seatsController.text),
+          startDate: start,
+          endDate: end,
+        ),
+        id: reservationId,
+      );
+      if (!router.routerContext.mounted) {
+        return;
+      }
+      currentState = currentState.copyWith(
+        seatsController: TextEditingController(),
+        selectedDate: null,
+        availableTables: [],
+        hasChecked: false,
+      );
+      Navigator.pop(router.routerContext);
+      loadUserReservations();
+
+
+    } catch (e) {
+      print(e);
+      if (!router.routerContext.mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(router.routerContext).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Une erreur est survenue lors de la mise à jour de la réservation',
           ),
           backgroundColor: Colors.red,
         ),
@@ -188,7 +295,6 @@ class ReservationNotifier extends BaseStateNotifier<ReservationState> {
       return;
     }
 
-
     if (currentState.selectedDate == null) {
       currentState = currentState.copyWith(
         error: "Veuillez sélectionner une date",
@@ -198,10 +304,12 @@ class ReservationNotifier extends BaseStateNotifier<ReservationState> {
 
     try {
       final availabilityQuery = AvailableTableRequestDto(
-        date: DateFormat('yyyy-MM-dd').format(currentState.selectedDate!),
-        timeSlotId: currentState.actualSlot['id'],
-        seats: currentState.seatsController.text,
+        date: DateFormat('yyyy-MM-dd').format(currentState.selectedDate!).toString(),
+        timeSlotId: currentState.actualSlot['id'].toString(),
+        seats: currentState.seatsController.text.toString(),
       );
+
+      print('Checking availability with: ${availabilityQuery.toJson()}');
       currentState = currentState.copyWith(checkingAvailability: true);
 
       final result = await _tableManager.getAvailableTables(
@@ -222,7 +330,8 @@ class ReservationNotifier extends BaseStateNotifier<ReservationState> {
   /// Crée une nouvelle réservation
 
   /// Modifie une réservation existante
-  Future<void> updateReservation({
+
+  /*Future<void> updateReservation({
     required int id,
     required int tableId,
     required int numberOfGuests,
@@ -242,9 +351,7 @@ class ReservationNotifier extends BaseStateNotifier<ReservationState> {
     } catch (e) {
       rethrow;
     }
-  }
-
-
+  }*/
 
   /// Annule une réservation
   Future<void> cancelReservation(int id) async {
