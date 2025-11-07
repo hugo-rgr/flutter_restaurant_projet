@@ -31,7 +31,7 @@ class BottomAppBarItem extends ConsumerWidget {
               icon,
               color:
               isActive
-                  ? Colors.red
+                  ? Colors.orange
                   : Colors.blue,
             ),
           ),
@@ -40,7 +40,7 @@ class BottomAppBarItem extends ConsumerWidget {
             style: TextStyle(
               color:
               isActive
-                  ? Colors.red
+                  ? Colors.orange
                   : Colors.blue,
             ),
           ),

@@ -34,7 +34,6 @@ class DioClient implements BaseRestClient {
           return handler.next(options);
         },
         onResponse: (response, handler) {
-
           return handler.next(response);
         },
         onError: (DioException error, handler) async {

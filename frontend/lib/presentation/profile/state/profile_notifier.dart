@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter_restaurant_app/presentation/auth/auth.dart';
 import 'package:flutter_restaurant_app/presentation/profile/state/profile_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../common/base_state_notifier.dart';
@@ -19,6 +20,11 @@ class ProfileNotifier extends BaseStateNotifier<ProfileState> {
   }
 
   void openProfile() {
+  }
+
+
+  void openAuth() {
+    router.pushReplacement(Auth(), Auth.route);
   }
 
 }
