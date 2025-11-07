@@ -1,4 +1,5 @@
 import { PrismaClient, ReservationStatus } from '@prisma/client';
+import {sendReservationAcceptedEmail, sendReservationRejectedEmail, sendReservationRequestDone} from "../config/emails";
 
 const prisma = new PrismaClient();
 
@@ -28,7 +29,9 @@ export interface AvailabilityQuery {
 export class ReservationService {
   // Create a new reservation
   async createReservation(data: CreateReservationData) {
-    // Check if table exists
+      console.log('merdddddddde 111111');
+
+      // Check if table exists
     const table = await prisma.table.findUnique({
       where: { id: data.tableId },
     });
@@ -252,6 +255,21 @@ export class ReservationService {
         table: true,
       },
     });
+
+
+    const user = reservation.user;
+
+      const reservationDate: string = new Date(reservation.startDate).toDateString();
+
+      const reservationTime: string = (new Date(reservation.startDate).getHours() -1).toString().padStart(2, '0') + ':' + new Date(reservation.startDate).getMinutes().toString().padStart(2, '0');
+
+      if(status===ReservationStatus.confirmed){
+          await sendReservationAcceptedEmail(user.email,reservationDate, reservationTime )
+      }else {
+            await sendReservationRejectedEmail(user.email,reservationDate, reservationTime )
+      }
+
+
 
     return reservation;
   }

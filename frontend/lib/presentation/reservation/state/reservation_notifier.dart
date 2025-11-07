@@ -34,6 +34,8 @@ class ReservationNotifier extends BaseStateNotifier<ReservationState> {
   }
 
   void setActualSlot(Map<String, dynamic> actualSlot) {
+
+    print('Actual slot set to: $actualSlot');
     currentState = currentState.copyWith(actualSlot: actualSlot);
   }
 
@@ -81,7 +83,8 @@ class ReservationNotifier extends BaseStateNotifier<ReservationState> {
   Future<void> acceptOrRefuseReservation({
     required int id,
     required bool accept,
-  }) async {
+  }) async
+  {
     try {
       final status =
           accept ? ReservationStatus.confirmed : ReservationStatus.rejected;
@@ -100,7 +103,6 @@ class ReservationNotifier extends BaseStateNotifier<ReservationState> {
     List<String> parts = timeString.split(':');
     int hour = int.parse(parts[0]);
     int minute = int.parse(parts[1]);
-
     return [hour, minute];
   }
 
@@ -113,26 +115,34 @@ class ReservationNotifier extends BaseStateNotifier<ReservationState> {
   }
 
   Future<void> createReservation({required int tableId}) async {
+
+    final start = DateTime(
+      currentState.selectedDate!.year,
+      currentState.selectedDate!.month,
+      currentState.selectedDate!.day,
+      getTime(currentState.actualSlot['startTime'])[0],
+      getTime(currentState.actualSlot['startTime'])[1],
+    );
+
+    final end = DateTime(
+      currentState.selectedDate!.year,
+      currentState.selectedDate!.month,
+      currentState.selectedDate!.day,
+      getTime(currentState.actualSlot['endTime'])[0],
+      getTime(currentState.actualSlot['endTime'])[1],
+    );
+
+
+    print('Creating reservation with:  $end');
+    print('Creating reservation with:  $start');
     try {
       await _manager.create(
         dto: ReservationCreateDTO(
           tableId: tableId,
           timeSlotId: currentState.actualSlot['id'],
           numberOfGuests: int.parse(currentState.seatsController.text),
-          startDate: DateTime(
-            currentState.selectedDate!.year,
-            currentState.selectedDate!.month,
-            currentState.selectedDate!.day,
-            getTime(currentState.actualSlot['startTime'])[0],
-            getTime(currentState.actualSlot['startTime'])[1],
-          ),
-          endDate: DateTime(
-            currentState.selectedDate!.year,
-            currentState.selectedDate!.month,
-            currentState.selectedDate!.day,
-            getTime(currentState.actualSlot['endTime'])[0],
-            getTime(currentState.actualSlot['endTime'])[1],
-          ),
+          startDate: start,
+          endDate: end,
         ),
       );
       if (!router.routerContext.mounted) {
@@ -233,6 +243,8 @@ class ReservationNotifier extends BaseStateNotifier<ReservationState> {
       rethrow;
     }
   }
+
+
 
   /// Annule une réservation
   Future<void> cancelReservation(int id) async {

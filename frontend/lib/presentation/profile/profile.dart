@@ -35,7 +35,11 @@ class Profile extends BasePage<ProfileNotifier, ProfileState> {
                 radius: 50,
                 backgroundColor: Theme.of(context).primaryColor,
                 child: Text(
-                  _getInitials(user.name ?? user.email),
+                  _getInitials(
+                    user.name != '' && user.name != null
+                        ? user.name!
+                        : user.email,
+                  ),
                   style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,

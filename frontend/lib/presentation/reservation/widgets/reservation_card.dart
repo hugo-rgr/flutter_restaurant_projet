@@ -10,10 +10,12 @@ import '../state/reservation_notifier.dart';
 class ReservationCard extends ConsumerWidget {
   final model.Reservation reservation;
   final bool isAdmin;
+  final Refreshable<ReservationNotifier> notifier;
 
   const ReservationCard({
     super.key,
     required this.reservation,
+    required this.notifier,
     this.isAdmin = false,
   });
 
@@ -117,7 +119,7 @@ class ReservationCard extends ConsumerWidget {
                   TextButton.icon(
                     onPressed: () {
                       if (isAdmin) {
-                        // Confirm reservation logic here
+                        ref.read(notifier).acceptOrRefuseReservation(id: reservation.id, accept: true);
                       } else {
                         // Edit reservation logic here
                       }
@@ -132,7 +134,14 @@ class ReservationCard extends ConsumerWidget {
                     ),
                   ),
                   TextButton.icon(
-                    onPressed: () => _deleteReservation(context, ref),
+                    onPressed: () {
+                      if(isAdmin){
+                        ref.read(notifier).acceptOrRefuseReservation(id: reservation.id, accept: false);
+                      }else {
+                        _deleteReservation(context, ref);
+
+                      }
+                    },
                     icon: Icon(
                       isAdmin ? Icons.close : Icons.delete,
                       color: Colors.red,
