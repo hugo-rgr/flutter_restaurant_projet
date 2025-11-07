@@ -22,13 +22,13 @@ class SplashNotifier extends BaseStateNotifier<SplashState> {
   FutureOr<void> refresh() async {
 
     await Future.delayed(const Duration(seconds: 2));
-    openLogin();
+    openMenu();
 
   }
 
-  void openLogin() {
+  void openMenu() {
 
-    router.pushReplacement(Auth(), Auth.route);
+    router.pushReplacement(EntryPointUI(), EntryPointUI.route);
   }
 
 }
