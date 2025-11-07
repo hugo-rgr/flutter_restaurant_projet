@@ -31,7 +31,7 @@ Frontend:
 - Gestion des réservations: création, affichage, modification et suppression, validation (pour hôte)
 - Authentification utilisateur (connexion, rôles: client, hôte, admin (équivalent à hôte ici))
 - Page Profil (affichage données de l'utilisateur + déconnexion)
-- Page Carte avec marker Google Maps + bouton recentrage
+- Page Carte avec marker Google Maps (incomplet)
 
 Backend:
 - Authentification (login) avec JWT
