@@ -4,6 +4,8 @@ import 'package:flutter_restaurant_app/data/local/models/table.dart';
 import 'package:flutter_restaurant_app/data/local/models/table_create_dto.dart';
 import 'package:flutter_restaurant_app/data/local/models/table_update_dto.dart';
 
+import '../local/models/available_table_request_dto.dart';
+
 final tablesDaoProvider = Provider(TablesDao.new);
 
 class TablesDao {
@@ -11,10 +13,19 @@ class TablesDao {
   final Ref ref;
   TableService get _service => ref.read(tableServiceProvider);
 
-  Future<RestaurantTable> create({required TableCreateDTO dto}) => _service.create(dto: dto);
+  Future<RestaurantTable> create({required TableCreateDTO dto}) =>
+      _service.create(dto: dto);
   Future<List<RestaurantTable>> getAll() => _service.getAll();
   Future<RestaurantTable> getById(int id) => _service.getById(id);
-  Future<RestaurantTable> update({required int id, required TableUpdateDTO dto}) => _service.update(id: id, dto: dto);
+  Future<RestaurantTable> update({
+    required int id,
+    required TableUpdateDTO dto,
+  }) => _service.update(id: id, dto: dto);
   Future<Map<String, dynamic>> delete(int id) => _service.delete(id);
-}
 
+  Future<List<RestaurantTable>> getAvailableTables({
+    required AvailableTableRequestDto availableTableRequestDto,
+  }) => _service.getAvailableTables(
+    availableTableRequestDto: availableTableRequestDto,
+  );
+}

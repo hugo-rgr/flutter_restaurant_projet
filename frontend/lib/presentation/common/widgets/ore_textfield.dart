@@ -78,8 +78,8 @@ class OreTextField extends ConsumerWidget {
   }
 }
 
-class UpOrDownDropdown extends ConsumerWidget {
-  const UpOrDownDropdown({
+class OreDropdown extends ConsumerWidget {
+  const OreDropdown({
     super.key,
     required this.items,
     required this.onChanged,

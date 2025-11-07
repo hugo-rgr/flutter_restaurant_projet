@@ -47,7 +47,7 @@ class User {
   }
 }
 
-@JsonSerializable()
+
 class AuthResponse {
   final String token;
   final User user;
@@ -57,7 +57,10 @@ class AuthResponse {
     required this.user,
   });
 
-  factory AuthResponse.fromJson(Map<String, dynamic> json) =>
-      _$AuthResponseFromJson(json);
-  Map<String, dynamic> toJson() => _$AuthResponseToJson(this);
+  factory AuthResponse.fromJson(Map<String, dynamic> json) {
+    return AuthResponse(
+      token: json['token'],
+      user: User.fromJson(json['user']),
+    );
+  }
 }

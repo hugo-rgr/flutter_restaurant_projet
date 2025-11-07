@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_restaurant_app/domain/user_logic.dart';
 import 'package:flutter_restaurant_app/presentation/common/widgets/ore_button.dart';
 import 'package:flutter_restaurant_app/presentation/profile/state/profile_notifier.dart';
 import 'package:flutter_restaurant_app/presentation/profile/state/profile_state.dart';
@@ -15,8 +16,7 @@ class Profile extends BasePage<ProfileNotifier, ProfileState> {
 
   @override
   Widget buildContent(BuildContext context, WidgetRef ref, ProfileState state) {
-
-    final user = null;
+    final user = ref.watch(userProvider);
 
     return user == null
         ? Center(
@@ -31,7 +31,6 @@ class Profile extends BasePage<ProfileNotifier, ProfileState> {
           child: Column(
             children: [
               const SizedBox(height: 32),
-              // Avatar
               CircleAvatar(
                 radius: 50,
                 backgroundColor: Theme.of(context).primaryColor,
@@ -45,7 +44,6 @@ class Profile extends BasePage<ProfileNotifier, ProfileState> {
                 ),
               ),
               const SizedBox(height: 24),
-              // Infos utilisateur
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Card(
@@ -80,7 +78,9 @@ class Profile extends BasePage<ProfileNotifier, ProfileState> {
               ),
 
               OreButton(
-                onTap: () {},
+                onTap: () {
+                  ref.read(notifier).logout();
+                },
                 widget: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

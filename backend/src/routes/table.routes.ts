@@ -8,6 +8,9 @@ const router = Router();
 // GET /tables - Get all tables (public or authenticated)
 router.get('/', tableController.getAllTables);
 
+//GET /tables/available - Get available tables (public or authenticated)
+router.get('/available', tableController.getAvailableTables);
+
 // GET /tables/:id - Get a single table (public or authenticated)
 router.get('/:id', tableController.getTableById);
 

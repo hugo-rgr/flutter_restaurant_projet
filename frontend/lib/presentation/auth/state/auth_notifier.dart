@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'package:flutter_restaurant_app/data/local/models/login_dto.dart';
 import 'package:flutter_restaurant_app/data/local/models/registration_dto.dart';
 import 'package:flutter_restaurant_app/domain/auth_manager.dart';
 import 'package:flutter_restaurant_app/presentation/auth/state/auth_state.dart';
 import 'package:flutter_restaurant_app/presentation/entrypoint/entrypoint.dart';
+import 'package:flutter_restaurant_app/services/prefs/prefs_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../common/base_state_notifier.dart';
 
@@ -15,6 +17,8 @@ class AuthNotifier extends BaseStateNotifier<AuthState> {
   AuthNotifier() : super(initialState: AuthState.initial());
 
   AuthManager get authManager => ref.read(authManagerProvider);
+
+  PreferencesService get prefs => ref.read(prefsProvider);
 
   @override
   FutureOr<void> refresh() async {}
@@ -53,7 +57,8 @@ class AuthNotifier extends BaseStateNotifier<AuthState> {
           role: ROLE.client,
         ),
       );
-
+      await prefs.setString(PersistStoreKey.email, email);
+      await prefs.setString(PersistStoreKey.password, password);
       openEntryPoint();
     } catch (e) {
       currentState = currentState.copyWith(
@@ -79,7 +84,11 @@ class AuthNotifier extends BaseStateNotifier<AuthState> {
 
     try {
       currentState = currentState.copyWith(isLoading: true);
-      // await authManager.login();
+      await authManager.signin(
+        loginInfo: LoginDTO(email: email, password: password),
+      );
+      await prefs.setString(PersistStoreKey.email, email);
+      await prefs.setString(PersistStoreKey.password, password);
 
       openEntryPoint();
     } catch (e) {

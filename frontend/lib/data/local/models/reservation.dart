@@ -11,6 +11,8 @@ enum ReservationStatus {
   confirmed,
   @JsonValue('cancelled')
   cancelled,
+  @JsonValue('rejected')
+  rejected,
 }
 
 @JsonSerializable()
@@ -81,6 +83,8 @@ class Reservation {
         return 'Confirmée';
       case ReservationStatus.cancelled:
         return 'Annulée';
+      case ReservationStatus.rejected:
+        return 'Rejeté';
     }
   }
 }

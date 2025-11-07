@@ -37,4 +37,6 @@ class ReservationDao {
 
   Future<AvailabilitySummary> availabilitySummary({required AvailabilitySummaryQuery query}) =>
       _service.availabilitySummary(query: query);
+
+  Future<List<Reservation>> adminGetAll() => _service.adminGetAll();
 }

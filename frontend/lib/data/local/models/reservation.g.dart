@@ -51,4 +51,5 @@ const _$ReservationStatusEnumMap = {
   ReservationStatus.pending: 'pending',
   ReservationStatus.confirmed: 'confirmed',
   ReservationStatus.cancelled: 'cancelled',
+  ReservationStatus.rejected: 'rejected',
 };

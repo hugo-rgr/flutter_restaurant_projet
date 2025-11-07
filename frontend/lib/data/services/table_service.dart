@@ -4,6 +4,8 @@ import 'package:flutter_restaurant_app/data/local/models/table.dart';
 import 'package:flutter_restaurant_app/data/local/models/table_create_dto.dart';
 import 'package:flutter_restaurant_app/data/local/models/table_update_dto.dart';
 
+import '../local/models/available_table_request_dto.dart';
+
 final tableServiceProvider = Provider(TableService.new);
 
 class TableService extends BaseService {
@@ -24,7 +26,26 @@ class TableService extends BaseService {
     try {
       final response = await client.get(path: '/tables');
       final list = response.data as List<dynamic>;
-      return list.map((e) => RestaurantTable.fromJson(e as Map<String, dynamic>)).toList();
+      return list
+          .map((e) => RestaurantTable.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<RestaurantTable>> getAvailableTables({
+    required AvailableTableRequestDto availableTableRequestDto,
+  }) async {
+    try {
+      final response = await client.get(
+        path: '/tables/available',
+        args: availableTableRequestDto.toJson(),
+      );
+      final list = response.data as List<dynamic>;
+      return list
+          .map((e) => RestaurantTable.fromJson(e as Map<String, dynamic>))
+          .toList();
     } catch (e) {
       rethrow;
     }
@@ -39,9 +60,15 @@ class TableService extends BaseService {
     }
   }
 
-  Future<RestaurantTable> update({required int id, required TableUpdateDTO dto}) async {
+  Future<RestaurantTable> update({
+    required int id,
+    required TableUpdateDTO dto,
+  }) async {
     try {
-      final response = await client.put(path: '/tables/$id', args: dto.toJson());
+      final response = await client.put(
+        path: '/tables/$id',
+        args: dto.toJson(),
+      );
       return RestaurantTable.fromJson(response.data as Map<String, dynamic>);
     } catch (e) {
       rethrow;
@@ -57,4 +84,3 @@ class TableService extends BaseService {
     }
   }
 }
-

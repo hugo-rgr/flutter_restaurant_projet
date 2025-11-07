@@ -23,6 +23,8 @@ CREATE TABLE "Reservation" (
     "id" SERIAL NOT NULL,
     "userId" INTEGER NOT NULL,
     "tableId" INTEGER NOT NULL,
+    "numberOfGuests" INTEGER NOT NULL,
+    "timeSlotId" TEXT NOT NULL,
     "startDate" TIMESTAMP(3) NOT NULL,
     "endDate" TIMESTAMP(3) NOT NULL,
     "status" "ReservationStatus" NOT NULL DEFAULT 'pending',
@@ -37,20 +39,11 @@ CREATE TABLE "Table" (
     "id" SERIAL NOT NULL,
     "number" INTEGER NOT NULL,
     "seats" INTEGER NOT NULL,
+    "timeSlot" JSONB[],
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Table_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "TimeSlot" (
-    "id" SERIAL NOT NULL,
-    "tableId" INTEGER NOT NULL,
-    "startTime" TIMESTAMP(3) NOT NULL,
-    "endTime" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "TimeSlot_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -64,6 +57,3 @@ ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_userId_fkey" FOREIGN KEY (
 
 -- AddForeignKey
 ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_tableId_fkey" FOREIGN KEY ("tableId") REFERENCES "Table"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "TimeSlot" ADD CONSTRAINT "TimeSlot_tableId_fkey" FOREIGN KEY ("tableId") REFERENCES "Table"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

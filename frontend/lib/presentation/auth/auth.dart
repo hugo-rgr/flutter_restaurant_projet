@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../common/base_page.dart';
 import '../common/widgets/ore_button.dart';
-import '../common/widgets/ore_textfield.dart';
 
 class Auth extends BasePage<AuthNotifier, AuthState> {
   Auth({super.key}) : super(provider: authNotifierProvider);
@@ -15,6 +14,8 @@ class Auth extends BasePage<AuthNotifier, AuthState> {
 
   @override
   Widget buildContent(BuildContext context, WidgetRef ref, AuthState state) {
+    final formKey = GlobalKey<FormState>();
+
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -25,7 +26,7 @@ class Auth extends BasePage<AuthNotifier, AuthState> {
               image: AssetImage('assets/images/resto_bg.jpeg'),
               fit: BoxFit.cover,
               colorFilter: ColorFilter.mode(
-                Colors.black.withValues(alpha: 0.7),
+                Colors.black.withValues(alpha: 0.9),
                 BlendMode.color,
               ),
             ),
@@ -37,11 +38,12 @@ class Auth extends BasePage<AuthNotifier, AuthState> {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Form(
+                key: formKey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      'RESTAU CHEZ O’REILLY',
+                      "RESTAU CHEZ O'REILLY",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
@@ -69,58 +71,162 @@ class Auth extends BasePage<AuthNotifier, AuthState> {
                         ),
                       ),
                     SizedBox(height: state.error != null ? 15 : 50),
-                    OreTextField(
-                      hintText: 'Email',
+
+                    // Email Field
+                    TextFormField(
                       controller: state.emailController,
-                      onChanged: (String) {},
-                    ),
-                    OreTextField(
-                      hintText: 'Password',
-                      controller: state.passwordController,
-                      onChanged: (String) {},
-                    ),
-                    if (!state.isLogin)
-                      OreTextField(
-                        hintText: 'Nom (Optionnel)',
-                        controller: state.nameController,
-                        onChanged: (String) {},
+                      keyboardType: TextInputType.emailAddress,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
                       ),
+                      decoration: InputDecoration(
+                        hintText: 'Email',
+                        errorStyle: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                        hintStyle: TextStyle(color: Colors.black),
+                        filled: true,
+                        fillColor: Colors.white.withValues(alpha: 0.7),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide.none,
+                        ),
+                        prefixIcon: Icon(Icons.email, color: Colors.white70),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Veuillez entrer votre email';
+                        }
+                        if (!RegExp(
+                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                        ).hasMatch(value)) {
+                          return 'Email invalide';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 15),
+
+                    // Password Field
+                    TextFormField(
+                      controller: state.passwordController,
+                      obscureText: true,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: '************',
+                        hintStyle: TextStyle(color: Colors.black),
+                        filled: true,
+                        errorStyle: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                        fillColor: Colors.white.withValues(alpha: 0.7),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide.none,
+                        ),
+
+                        prefixIcon: Icon(Icons.lock, color: Colors.white70),
+                      ),
+
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Veuillez entrer votre mot de passe';
+                        }
+                        if (value.length < 6) {
+                          return 'Le mot de passe doit contenir au moins 6 caractères';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 15),
+
+                    // Name Field (only for registration)
                     if (!state.isLogin)
-                      OreTextField(
-                        hintText: 'Phone (Optionnel)',
+                      TextFormField(
+                        controller: state.nameController,
+                        style: TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          hintText: 'Nom (Optionnel)',
+                          hintStyle: TextStyle(color: Colors.black),
+                          filled: true,
+                          fillColor: Colors.white.withValues(alpha: 0.7),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                          prefixIcon: Icon(Icons.person, color: Colors.white70),
+                        ),
+                      ),
+                    if (!state.isLogin) const SizedBox(height: 15),
+
+                    // Phone Field (only for registration)
+                    if (!state.isLogin)
+                      TextFormField(
                         controller: state.phoneController,
-                        onChanged: (String) {},
-                        textInputType: TextInputType.number,
+                        keyboardType: TextInputType.phone,
+                        style: TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          hintText: 'Téléphone (Optionnel)',
+                          hintStyle: TextStyle(color: Colors.black),
+                          filled: true,
+                          fillColor: Colors.white.withValues(alpha: 0.7),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                          prefixIcon: Icon(Icons.phone, color: Colors.white70),
+                        ),
+                        validator: (value) {
+                          if (value != null && value.isNotEmpty) {
+                            if (!RegExp(r'^[0-9+\s\-\(\)]+$').hasMatch(value)) {
+                              return 'Numéro de téléphone invalide';
+                            }
+                          }
+                          return null;
+                        },
                       ),
                     const SizedBox(height: 15),
+
+                    // Submit Button
                     OreButton(
-                      onTap:
-                          () =>
-                              state.isLogin
-                                  ? ref.read(notifier).login()
-                                  : ref.read(notifier).register(),
+                      onTap: () {
+                        if (formKey.currentState!.validate()) {
+                          state.isLogin
+                              ? ref.read(notifier).login()
+                              : ref.read(notifier).register();
+                        }
+                      },
                       text:
                           state.isLoading
                               ? null
                               : state.isLogin
                               ? 'Se connecter'
-                              : "S'inscire",
+                              : "S'inscrire",
                       widget:
                           state.isLoading
                               ? CupertinoActivityIndicator(color: Colors.white)
                               : null,
                     ),
                     const SizedBox(height: 15),
+
+                    // Switch Auth Mode
                     GestureDetector(
                       onTap: () {
                         ref.read(notifier).switchAuth();
                       },
                       child: Text(
                         state.isLogin
-                            ? 'Vous etes nouveau ? inscrivez-vous'
-                            : 'Vous avez déjà un compte ? connectez-vous',
+                            ? 'Vous êtes nouveau ? Inscrivez-vous'
+                            : 'Vous avez déjà un compte ? Connectez-vous',
                         textAlign: TextAlign.center,
-
                         style: TextStyle(
                           color: Colors.orange,
                           fontSize: 18,
@@ -130,17 +236,24 @@ class Auth extends BasePage<AuthNotifier, AuthState> {
                         ),
                       ),
                     ),
+
+                    // Terms and Conditions
                     if (!state.isLogin)
-                      Text(
-                        'En vous inscrivant, vous acceptez nos termes et conditions d’utilisations',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontStyle: FontStyle.italic,
+                      Padding(
+                        padding: const EdgeInsets.only(top: 15),
+                        child: Text(
+                          'En vous inscrivant, vous acceptez nos termes et conditions d\'utilisation',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            fontStyle: FontStyle.italic,
+                          ),
                         ),
                       ),
-                    SizedBox(height: MediaQuery.sizeOf(context).height / 10),
+                    if (state.isLogin)
+                      SizedBox(height: MediaQuery.sizeOf(context).height / 6),
                   ],
                 ),
               ),
@@ -148,6 +261,7 @@ class Auth extends BasePage<AuthNotifier, AuthState> {
           ),
         ),
 
+        // Back to Menu Button
         Positioned(
           top: 50,
           right: 20,
@@ -155,13 +269,12 @@ class Auth extends BasePage<AuthNotifier, AuthState> {
             onTap: () {
               ref.read(notifier).openEntryPoint();
             },
-
             child: Container(
               decoration: BoxDecoration(color: Colors.orange),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  'Retourner au menu',
+                  "Retourner dans le menu",
                   style: TextStyle(color: Colors.white),
                 ),
               ),
