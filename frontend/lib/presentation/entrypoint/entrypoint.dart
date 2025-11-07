@@ -3,10 +3,10 @@ import 'package:flutter_restaurant_app/presentation/entrypoint/state/navbar.dart
 import 'package:flutter_restaurant_app/presentation/menu/menu.dart';
 import 'package:flutter_restaurant_app/presentation/profile/profile.dart';
 import 'package:flutter_restaurant_app/presentation/reservation/reservation.dart';
+import 'package:flutter_restaurant_app/presentation/map/map_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:animations/animations.dart';
 import '../../domain/navbar_logic.dart';
-import '../../router/router_provider.dart';
 
 
 /// This page will contain all the bottom navigation tabs
@@ -25,6 +25,7 @@ class _EntryPointUIState extends ConsumerState<EntryPointUI> {
     List<Widget> pages = [
       Menu(),
       ReservationPage(),
+      MapPage(),
       Profile()
     ];
 
