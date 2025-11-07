@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter_restaurant_app/presentation/auth/auth.dart';
 import 'package:flutter_restaurant_app/presentation/entrypoint/entrypoint.dart';
 import 'package:flutter_restaurant_app/presentation/splash/state/splash_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,13 +22,13 @@ class SplashNotifier extends BaseStateNotifier<SplashState> {
   FutureOr<void> refresh() async {
 
     await Future.delayed(const Duration(seconds: 2));
-    openMenu();
+    openLogin();
 
   }
 
-  void openMenu() {
+  void openLogin() {
 
-    router.pushReplacement(EntryPointUI(), EntryPointUI.route);
+    router.pushReplacement(Auth(), Auth.route);
   }
 
 }
