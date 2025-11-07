@@ -76,7 +76,7 @@ mixin BasePageMixin<TProvider extends ProviderBase<AsyncValue<TState>>, TState>
                   if (appBar != null) appBar,
                   Padding(
                     padding: EdgeInsets.only(
-                      top: appBar != null ? kToolbarHeight*2 : 0,
+                      top: appBar != null ? kToolbarHeight* (withoutAppBar() ? 0 :2) : 0,
                     ),
                     child: buildContent(context, ref, state),
                   ),
@@ -85,6 +85,10 @@ mixin BasePageMixin<TProvider extends ProviderBase<AsyncValue<TState>>, TState>
           error: buildError,
           loading: () => buildLoading(context),
         );
+  }
+
+  bool withoutAppBar() {
+    return false;
   }
 
   Widget? _buildAppBar(BuildContext context, WidgetRef ref) {

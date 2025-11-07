@@ -16,12 +16,40 @@ final _privateConstructorUsedError = UnsupportedError(
 );
 
 /// @nodoc
-mixin _$AuthState {}
+mixin _$AuthState {
+  String? get error => throw _privateConstructorUsedError;
+  bool get isLoading => throw _privateConstructorUsedError;
+  bool get isLogin => throw _privateConstructorUsedError;
+  TextEditingController get emailController =>
+      throw _privateConstructorUsedError;
+  TextEditingController get passwordController =>
+      throw _privateConstructorUsedError;
+  TextEditingController get nameController =>
+      throw _privateConstructorUsedError;
+  TextEditingController get phoneController =>
+      throw _privateConstructorUsedError;
+
+  /// Create a copy of AuthState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $AuthStateCopyWith<AuthState> get copyWith =>
+      throw _privateConstructorUsedError;
+}
 
 /// @nodoc
 abstract class $AuthStateCopyWith<$Res> {
   factory $AuthStateCopyWith(AuthState value, $Res Function(AuthState) then) =
       _$AuthStateCopyWithImpl<$Res, AuthState>;
+  @useResult
+  $Res call({
+    String? error,
+    bool isLoading,
+    bool isLogin,
+    TextEditingController emailController,
+    TextEditingController passwordController,
+    TextEditingController nameController,
+    TextEditingController phoneController,
+  });
 }
 
 /// @nodoc
@@ -36,14 +64,78 @@ class _$AuthStateCopyWithImpl<$Res, $Val extends AuthState>
 
   /// Create a copy of AuthState
   /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? error = freezed,
+    Object? isLoading = null,
+    Object? isLogin = null,
+    Object? emailController = null,
+    Object? passwordController = null,
+    Object? nameController = null,
+    Object? phoneController = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            error:
+                freezed == error
+                    ? _value.error
+                    : error // ignore: cast_nullable_to_non_nullable
+                        as String?,
+            isLoading:
+                null == isLoading
+                    ? _value.isLoading
+                    : isLoading // ignore: cast_nullable_to_non_nullable
+                        as bool,
+            isLogin:
+                null == isLogin
+                    ? _value.isLogin
+                    : isLogin // ignore: cast_nullable_to_non_nullable
+                        as bool,
+            emailController:
+                null == emailController
+                    ? _value.emailController
+                    : emailController // ignore: cast_nullable_to_non_nullable
+                        as TextEditingController,
+            passwordController:
+                null == passwordController
+                    ? _value.passwordController
+                    : passwordController // ignore: cast_nullable_to_non_nullable
+                        as TextEditingController,
+            nameController:
+                null == nameController
+                    ? _value.nameController
+                    : nameController // ignore: cast_nullable_to_non_nullable
+                        as TextEditingController,
+            phoneController:
+                null == phoneController
+                    ? _value.phoneController
+                    : phoneController // ignore: cast_nullable_to_non_nullable
+                        as TextEditingController,
+          )
+          as $Val,
+    );
+  }
 }
 
 /// @nodoc
-abstract class _$$AuthStateImplCopyWith<$Res> {
+abstract class _$$AuthStateImplCopyWith<$Res>
+    implements $AuthStateCopyWith<$Res> {
   factory _$$AuthStateImplCopyWith(
     _$AuthStateImpl value,
     $Res Function(_$AuthStateImpl) then,
   ) = __$$AuthStateImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String? error,
+    bool isLoading,
+    bool isLogin,
+    TextEditingController emailController,
+    TextEditingController passwordController,
+    TextEditingController nameController,
+    TextEditingController phoneController,
+  });
 }
 
 /// @nodoc
@@ -57,28 +149,164 @@ class __$$AuthStateImplCopyWithImpl<$Res>
 
   /// Create a copy of AuthState
   /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? error = freezed,
+    Object? isLoading = null,
+    Object? isLogin = null,
+    Object? emailController = null,
+    Object? passwordController = null,
+    Object? nameController = null,
+    Object? phoneController = null,
+  }) {
+    return _then(
+      _$AuthStateImpl(
+        error:
+            freezed == error
+                ? _value.error
+                : error // ignore: cast_nullable_to_non_nullable
+                    as String?,
+        isLoading:
+            null == isLoading
+                ? _value.isLoading
+                : isLoading // ignore: cast_nullable_to_non_nullable
+                    as bool,
+        isLogin:
+            null == isLogin
+                ? _value.isLogin
+                : isLogin // ignore: cast_nullable_to_non_nullable
+                    as bool,
+        emailController:
+            null == emailController
+                ? _value.emailController
+                : emailController // ignore: cast_nullable_to_non_nullable
+                    as TextEditingController,
+        passwordController:
+            null == passwordController
+                ? _value.passwordController
+                : passwordController // ignore: cast_nullable_to_non_nullable
+                    as TextEditingController,
+        nameController:
+            null == nameController
+                ? _value.nameController
+                : nameController // ignore: cast_nullable_to_non_nullable
+                    as TextEditingController,
+        phoneController:
+            null == phoneController
+                ? _value.phoneController
+                : phoneController // ignore: cast_nullable_to_non_nullable
+                    as TextEditingController,
+      ),
+    );
+  }
 }
 
 /// @nodoc
 
 class _$AuthStateImpl implements _AuthState {
-  const _$AuthStateImpl();
+  const _$AuthStateImpl({
+    this.error,
+    this.isLoading = false,
+    this.isLogin = false,
+    required this.emailController,
+    required this.passwordController,
+    required this.nameController,
+    required this.phoneController,
+  });
+
+  @override
+  final String? error;
+  @override
+  @JsonKey()
+  final bool isLoading;
+  @override
+  @JsonKey()
+  final bool isLogin;
+  @override
+  final TextEditingController emailController;
+  @override
+  final TextEditingController passwordController;
+  @override
+  final TextEditingController nameController;
+  @override
+  final TextEditingController phoneController;
 
   @override
   String toString() {
-    return 'AuthState()';
+    return 'AuthState(error: $error, isLoading: $isLoading, isLogin: $isLogin, emailController: $emailController, passwordController: $passwordController, nameController: $nameController, phoneController: $phoneController)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$AuthStateImpl);
+        (other.runtimeType == runtimeType &&
+            other is _$AuthStateImpl &&
+            (identical(other.error, error) || other.error == error) &&
+            (identical(other.isLoading, isLoading) ||
+                other.isLoading == isLoading) &&
+            (identical(other.isLogin, isLogin) || other.isLogin == isLogin) &&
+            (identical(other.emailController, emailController) ||
+                other.emailController == emailController) &&
+            (identical(other.passwordController, passwordController) ||
+                other.passwordController == passwordController) &&
+            (identical(other.nameController, nameController) ||
+                other.nameController == nameController) &&
+            (identical(other.phoneController, phoneController) ||
+                other.phoneController == phoneController));
   }
 
   @override
-  int get hashCode => runtimeType.hashCode;
+  int get hashCode => Object.hash(
+    runtimeType,
+    error,
+    isLoading,
+    isLogin,
+    emailController,
+    passwordController,
+    nameController,
+    phoneController,
+  );
+
+  /// Create a copy of AuthState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$AuthStateImplCopyWith<_$AuthStateImpl> get copyWith =>
+      __$$AuthStateImplCopyWithImpl<_$AuthStateImpl>(this, _$identity);
 }
 
 abstract class _AuthState implements AuthState {
-  const factory _AuthState() = _$AuthStateImpl;
+  const factory _AuthState({
+    final String? error,
+    final bool isLoading,
+    final bool isLogin,
+    required final TextEditingController emailController,
+    required final TextEditingController passwordController,
+    required final TextEditingController nameController,
+    required final TextEditingController phoneController,
+  }) = _$AuthStateImpl;
+
+  @override
+  String? get error;
+  @override
+  bool get isLoading;
+  @override
+  bool get isLogin;
+  @override
+  TextEditingController get emailController;
+  @override
+  TextEditingController get passwordController;
+  @override
+  TextEditingController get nameController;
+  @override
+  TextEditingController get phoneController;
+
+  /// Create a copy of AuthState
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$AuthStateImplCopyWith<_$AuthStateImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
