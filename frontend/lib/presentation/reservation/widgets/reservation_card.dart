@@ -147,7 +147,8 @@ class ReservationCard extends ConsumerWidget {
                         style: TextStyle(color: Colors.grey),
                       ),
                     ),
-                  TextButton.icon(
+                  if (reservation.status == model.ReservationStatus.pending)
+                    TextButton.icon(
                     onPressed: () {
                       if (isAdmin) {
                         ref
