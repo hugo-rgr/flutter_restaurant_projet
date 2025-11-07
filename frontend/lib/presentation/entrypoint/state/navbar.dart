@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'dart:io' show Platform;
 import 'navbar_item.dart';
 
 class AppBottomNavigationBar extends ConsumerWidget {
@@ -38,9 +37,15 @@ class AppBottomNavigationBar extends ConsumerWidget {
             icon: Icons.book_online,
           ),
           BottomAppBarItem(
-            name: 'Profile',
+            name: 'Carte',
             isActive: currentIndex == 2,
             onTap: () => onNavTap(2),
+            icon: Icons.map,
+          ),
+          BottomAppBarItem(
+            name: 'Profile',
+            isActive: currentIndex == 3,
+            onTap: () => onNavTap(3),
             icon: Icons.person,
           ),
         ],
