@@ -11,7 +11,6 @@ class MapNotifier extends BaseStateNotifier<MapState> {
 
   @override
   FutureOr<void> refresh() async {
-    // Placeholder pour logic future (ex: récupérer coordonnées depuis backend)
   }
 
   void setCoordinates(double lat, double lng) {
